@@ -9,12 +9,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -91,8 +94,10 @@ public class MainActivity extends AppCompatActivity {
                 .callback(new PermissionUtils.SimpleCallback() {
                     @Override
                     public void onGranted() {
-                        Intent intent = new Intent(Intent.ACTION_PICK);
+                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                         intent.setType("image/*");
+                        //开启多选(上面要是用pick的话，vivo手机不行，小米可以)
+                        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                         startActivityForResult(intent, 1001);
                     }
 
@@ -108,26 +113,41 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && data != null) {
+        if (resultCode == RESULT_OK && null != data) {
             switch (requestCode) {
                 case 1001:
-                    Uri uri = data.getData();//可以直接传递uri过去并且可以复制给imagview,但是加号放不上去，所以不用了
-                    //使用content的接口
-                    ContentResolver cr = this.getContentResolver();
-                    //获取图片
-                    try {
-                        Bitmap bitmap = BitmapFactory.decodeStream(cr.openInputStream(uri));
-                        photos.add(bitmap);
-                        adapter.updateAll(photos);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
+                    //多选用getClipData，这时候getData是空的
+                    ClipData imageClips = data.getClipData();
+                    if (imageClips != null) {
+                        for (int i = 0; i < imageClips.getItemCount(); i++) {
+                            Uri imageUri = imageClips.getItemAt(i).getUri();
+                            setImageToList(imageUri);
+                        }
+                    } else {
+                        //单选getData才有数据
+                        Uri uri = data.getData();
+                        setImageToList(uri);
                     }
                     break;
                 default:
                     break;
             }
+
         }
-
-
     }
+
+    /**
+     * 提取出来的设置图片资源到适配器
+     */
+    private void setImageToList(Uri uri) {
+        try {
+            Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
+            photos.add(bitmap);
+            adapter.updateAll(photos);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }
