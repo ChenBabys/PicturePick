@@ -3,33 +3,23 @@ package com.home.picturepick;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.ClipData;
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.blankj.utilcode.constant.PermissionConstants;
-import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PermissionUtils;
 import com.blankj.utilcode.util.ToastUtils;
-import com.blankj.utilcode.util.UriUtils;
+import com.home.picturepick.adapter.MainAdapter;
+import com.home.picturepick.fragment.PreViewDialogFragment;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView photoList;
     private TextView title;
     private MainAdapter adapter;
-    private List<Bitmap> photos;
+    private List<Uri> photos;
 
     @SuppressLint("ResourceType")
     @Override
@@ -60,7 +50,11 @@ public class MainActivity extends AppCompatActivity {
                     if (position == photos.size()) {
                         choose();
                     } else {
-                        ToastUtils.showShort(view.getTag() + "");
+                        //ToastUtils.showShort(view.getTag() + "");
+                        PreViewDialogFragment fragment = new PreViewDialogFragment();
+                        fragment.setImageUris(photos);
+                        fragment.setPosition(position);
+                        fragment.show(getSupportFragmentManager(), "PreViewDialogFragment");
                     }
                 }
 
@@ -120,13 +114,15 @@ public class MainActivity extends AppCompatActivity {
                     ClipData imageClips = data.getClipData();
                     if (imageClips != null) {
                         for (int i = 0; i < imageClips.getItemCount(); i++) {
-                            Uri imageUri = imageClips.getItemAt(i).getUri();
-                            setImageToList(imageUri);
+                            Uri uri = imageClips.getItemAt(i).getUri();
+                            setImageToList(uri);
                         }
                     } else {
                         //单选getData才有数据
                         Uri uri = data.getData();
-                        setImageToList(uri);
+                        if (uri != null) {
+                            setImageToList(uri);
+                        }
                     }
                     break;
                 default:
@@ -140,14 +136,9 @@ public class MainActivity extends AppCompatActivity {
      * 提取出来的设置图片资源到适配器
      */
     private void setImageToList(Uri uri) {
-        try {
-            Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
-            photos.add(bitmap);
-            adapter.updateAll(photos);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        //Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
+        photos.add(uri);
+        adapter.updateAll(photos);
     }
-
 
 }

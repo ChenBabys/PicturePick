@@ -38,4 +38,6 @@ dependencies {
     // 布兰柯基工具库(库一定要更新到1.28.1,最新的BusUtils改变挺大的，如果还是1.24版本会使用不了)
     // if u use AndroidX, use the following
     implementation 'com.blankj:utilcodex:1.29.0'
+    //图片加载库
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
 }
