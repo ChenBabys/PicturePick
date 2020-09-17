@@ -86,7 +86,12 @@ public class ImageActivity extends AppCompatActivity {
             imagesAdapter.setOnItemClickListener(new ImagesAdapter.OnItemClickListener() {
                 @Override
                 public void onClick(View view, int position) {
-                    ToastUtils.showShort(position);
+                    //ToastUtils.showShort(position);
+                    if (position == 0) {
+                        onCameraClick();
+                    }else {
+                        view.setSelected(true);
+                    }
 
                 }
 
