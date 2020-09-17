@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <translate
+        android:duration="500"
+        android:fromYDelta="100%p"
+        android:toYDelta="0" />
+
+    <!--    Y轴的设置规则是：屏幕上方进来是负值，屏幕下方进来是正值。图标所在位置是0；-->
+
+
+    <alpha
+        android:duration="500"
+        android:fromAlpha="0.0"
+        android:toAlpha="1.0" />
+</set>
