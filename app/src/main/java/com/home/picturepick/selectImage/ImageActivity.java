@@ -9,6 +9,7 @@ import androidx.core.content.FileProvider;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
@@ -24,9 +25,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.blankj.utilcode.util.ToastUtils;
 import com.home.picturepick.R;
 
 import java.io.File;
@@ -52,8 +55,9 @@ public class ImageActivity extends AppCompatActivity {
     private File takePhotoImageFile;
     //被选中图片的集合
     private List<Image> mSelectedImages = new ArrayList<>();
-    private List<Image> mImages = new ArrayList<>();
+    //private List<Image> mImages = new ArrayList<>();
     private List<ImageFolder> mImageFolders = new ArrayList<>();
+    private ImagesAdapter imagesAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +81,27 @@ public class ImageActivity extends AppCompatActivity {
 
 
     private void addImagesToAdapter(ArrayList<Image> images) {
+        if (imagesAdapter == null) {
+            imagesAdapter = new ImagesAdapter(images);
+            imagesAdapter.setOnItemClickListener(new ImagesAdapter.OnItemClickListener() {
+                @Override
+                public void onClick(View view, int position) {
+                    ToastUtils.showShort(position);
 
+                }
+
+                @Override
+                public void onLongClick(View view, int position) {
+
+                }
+            });
+            rlvImages.setHasFixedSize(true);
+            rlvImages.setNestedScrollingEnabled(false);
+            rlvImages.setLayoutManager(new GridLayoutManager(ImageActivity.this, 4));
+            rlvImages.setAdapter(imagesAdapter);
+        } else {
+            imagesAdapter.updateAll(images);
+        }
 
     }
 
@@ -102,7 +126,7 @@ public class ImageActivity extends AppCompatActivity {
         @Override
         public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
             return new CursorLoader(ImageActivity.this, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, IMAGE_PROJECTION,
-                    null, null, IMAGE_PROJECTION[2] + "DESC");
+                    null, null, IMAGE_PROJECTION[2]);
         }
 
         @Override

@@ -1,6 +1,5 @@
 package com.home.picturepick.selectImage;
 
-import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -15,12 +14,12 @@ import com.home.picturepick.R;
 import java.util.List;
 
 public class ImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private List<Uri> photoList;
+    private List<Image> photoList;
     private static int TYPE_CAMERA = 0;//照相机图片
     private static int TYPE_IMAGE = 1;//其他图片
     private int mMaxAlbum = 9;//最大选择图片的数量
 
-    public ImagesAdapter(List<Uri> photoList) {
+    public ImagesAdapter(List<Image> photoList) {
         this.photoList = photoList;
     }
 
@@ -75,8 +74,8 @@ public class ImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         } else if (holder instanceof ImageViewHolder) {
             ImageViewHolder imageViewHolder = (ImageViewHolder) holder;
             if (position >= 0 && position < photoList.size()) {
-                Uri uri = photoList.get(position);
-                imageViewHolder.onBind(uri);
+                Image image = photoList.get(position);
+                imageViewHolder.onBind(image);
                 itemView = imageViewHolder.itemView;
             }
         }
@@ -122,7 +121,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
 
-    public void updateAll(List<Uri> photoList) {
+    public void updateAll(List<Image> photoList) {
         this.photoList = photoList;
         notifyDataSetChanged();
     }
@@ -160,7 +159,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
 
         public void onBindCamera() {
-            add.setImageResource(R.mipmap.ic_add);
+            add.setImageResource(R.drawable.ic_camera);
         }
     }
 
@@ -175,11 +174,11 @@ public class ImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             img = (ImageView) itemView;
         }
 
-        public void onBind(Uri imgUri) {
+        public void onBind(Image image) {
             //img.setImageURI(imgUri);
             //使用Glide加载图片就不要用view.setTag(Viewholder)了，去掉上面的tag
             //另外用glide也不会造成资源使用过多的问题。不会像上面setImageURI那样卡,也不会让那些太大的照片造成闪退
-            Glide.with(img).load(imgUri).into(img);
+            Glide.with(img).load(image.getPath()).into(img);
         }
     }
 

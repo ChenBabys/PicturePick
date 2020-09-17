@@ -161,7 +161,7 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         public void onBindAdd() {
-            add.setImageResource(R.mipmap.ic_add);
+            add.setImageResource(R.drawable.ic_add);
         }
     }
 

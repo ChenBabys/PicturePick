@@ -19,6 +19,7 @@ import com.blankj.utilcode.util.PermissionUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.home.picturepick.adapter.MainAdapter;
 import com.home.picturepick.fragment.PreViewDialogFragment;
+import com.home.picturepick.selectImage.ImageActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,11 +89,14 @@ public class MainActivity extends AppCompatActivity {
                 .callback(new PermissionUtils.SimpleCallback() {
                     @Override
                     public void onGranted() {
-                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                        intent.setType("image/*");
-                        //开启多选(上面要是用pick的话，vivo手机不行，小米可以)
-                        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                        startActivityForResult(intent, 1001);
+//                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//                        intent.setType("image/*");
+//                        //开启多选(上面要是用pick的话，vivo手机不行，小米可以)
+//                        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+//                        startActivityForResult(intent, 1001);
+
+                        startActivity(new Intent(MainActivity.this, ImageActivity.class));
+
                     }
 
                     @Override
