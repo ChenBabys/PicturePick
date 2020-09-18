@@ -48,6 +48,16 @@
         app:layout_constraintBottom_toTopOf="@id/csl_bottom"
         app:layout_constraintTop_toBottomOf="@id/csl_top" />
 
+
+    <com.home.picturepick.selectImage.ImageFolderView
+        android:id="@+id/ifv_images_folder"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/csl_bottom"
+        app:layout_constraintTop_toBottomOf="@id/csl_top" />
+
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/csl_bottom"
         android:layout_width="match_parent"

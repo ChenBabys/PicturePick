@@ -17,6 +17,13 @@ import com.home.picturepick.R;
 
 import java.util.List;
 
+/**
+ * author : CYS
+ * e-mail : 1584935420@qq.com
+ * date : 2020/9/18 16:42
+ * desc :
+ * version : 1.0
+ */
 public class ImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<Image> photoList;
     private List<Image> mSelectedImages;
@@ -115,7 +122,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             itemView.setOnClickListener(view -> {
                 //重点注意！！！可变的itemview，这里用的是getLayoutPosition，和平常只有一个ViewHolder的区别在此，平常用getAdapterPosition
                 int pos = holder.getLayoutPosition();
-                onItemClickListener.onClick(holder.itemView, image, pos);
+                onItemClickListener.onClick(holder.itemView, photoList, pos);
 
             });
             //长按
@@ -256,7 +263,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private static OnItemClickListener onItemClickListener;
 
     public interface OnItemClickListener {
-        void onClick(View view, Image image, int position);
+        void onClick(View view, List<Image> photoList, int position);
 
         void onLongClick(View view, Image image, int position);
 

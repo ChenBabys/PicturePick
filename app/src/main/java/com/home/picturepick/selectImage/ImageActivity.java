@@ -31,6 +31,7 @@ import com.blankj.utilcode.util.BarUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.home.picturepick.BuildConfig;
 import com.home.picturepick.R;
+import com.home.picturepick.fragment.PreViewDialogFragment;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -41,10 +42,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * author : CYS
+ * e-mail : 1584935420@qq.com
+ * date : 2020/9/18 16:42
+ * desc :
+ * version : 1.0
+ */
 public class ImageActivity extends AppCompatActivity implements View.OnClickListener {
     private TextView titleBack, titleFinish, imageFolder, imagePreview;
     private ConstraintLayout cslTop;
     private RecyclerView rlvImages;
+    private ImageFolderView ifvFolderView;
     private boolean mHasCamera = true;
     // 返回选择图片列表的EXTRA_KEY
     public static final String EXTRA_RESULT = "EXTRA_RESULT";
@@ -58,6 +67,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
     //private List<Image> mImages = new ArrayList<>();
     private List<ImageFolder> mImageFolders = new ArrayList<>();
     private ImagesAdapter imagesAdapter;
+    private ImageFolderAdapter mImageFolderAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +84,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         imageFolder = this.findViewById(R.id.image_folder);
         imagePreview = this.findViewById(R.id.image_preview);
         rlvImages = this.findViewById(R.id.rlv_images);
+        ifvFolderView = this.findViewById(R.id.ifv_images_folder);
         //为四个按钮添加点击事件
         titleBack.setOnClickListener(this);
         titleFinish.setOnClickListener(this);
@@ -86,11 +97,27 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         BarUtils.setStatusBarColor(ImageActivity.this, ContextCompat.getColor(this, R.color.colorBlack));
         //设置了状态栏为黑色之后，状态栏的高度没了。所以要加上这一句保持高度。
         BarUtils.addMarginTopEqualStatusBarHeight(cslTop);
+        //默认先加载的选中图片，这是为了同步选中的代码，注释掉吧
+        //setupSelectedImages();
         //异步加载图片
         LoaderManager.getInstance(this).initLoader(0, null, mLoaderCallbacks);
     }
 
-
+    /**
+     * //默认先加载的选中图片
+     * 这是为了同步选中的代码，其实大可不必。和使用的地方同步，这种选择而觉得多余了，界面内同步就行了，使用的地方不用同步
+     * 注释掉吧
+     */
+//    private void setupSelectedImages() {
+//        ArrayList<Image> selectImages = getIntent().getParcelableArrayListExtra("selected_images");
+//        mSelectedImages.addAll(selectImages);
+//
+//        if (mSelectedImages.size() > 0 && mSelectedImages.size() <= MAX_SIZE) {
+//            imagePreview.setClickable(true);
+//            imagePreview.setText(String.format("预览(%d/9) ", mSelectedImages.size()));
+//            imagePreview.setTextColor(ContextCompat.getColor(ImageActivity.this, R.color.colorAccent));
+//        }
+//    }
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -104,10 +131,25 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                 finish();
                 break;
             case R.id.image_folder:
-
+                if (ifvFolderView.isShowing()) {
+                    ifvFolderView.setVisibility(View.GONE);
+                    ifvFolderView.hide();
+                } else {
+                    ifvFolderView.setVisibility(View.VISIBLE);
+                    ifvFolderView.show();
+                }
                 break;
             case R.id.image_preview:
-
+                //预览图片
+                //预览图片
+                List<String> imageStrs = new ArrayList<>();
+                PreViewDialogFragment fragment = new PreViewDialogFragment();
+                for (Image image : mSelectedImages) {
+                    String imageStr = image.getPath();
+                    imageStrs.add(imageStr);
+                }
+                fragment.setImagePathList(imageStrs);
+                fragment.show(getSupportFragmentManager(), "PreViewDialogFragment");
                 break;
             default:
                 break;
@@ -117,23 +159,30 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
     }
 
 
+    /**
+     * 设置图片的适配器
+     *
+     * @param images
+     */
     private void addImagesToAdapter(ArrayList<Image> images) {
         if (imagesAdapter == null) {
             imagesAdapter = new ImagesAdapter(images, mSelectedImages);
             imagesAdapter.setOnItemClickListener(new ImagesAdapter.OnItemClickListener() {
                 @Override
-                public void onClick(View view, Image image, int position) {
+                public void onClick(View view, List<Image> photoList, int position) {
                     //ToastUtils.showShort(position);
                     //如果是第一个就打开相机
                     if (position == 0)
                         onCameraClick();
+                    //预览图片
+                    PreViewDialogFragment fragment = new PreViewDialogFragment();
+                    //fragment.setImagePathList(photoList);
+                    fragment.setPosition(position);
+                    fragment.show(getSupportFragmentManager(), "PreViewDialogFragment");
 
 
-//                    else {
 //                        //奇怪。父布局也可以让子布局的drawable选中的么
 //                        view.setSelected(true);
-//                    }
-
                 }
 
                 @Override
@@ -174,9 +223,16 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
+    /**
+     * 添加文件夹的适配器
+     */
     private void addImageFoldersToAdapter() {
-
-
+        if (mImageFolderAdapter == null) {
+            mImageFolderAdapter = new ImageFolderAdapter(mImageFolders);
+            ifvFolderView.setAdapter(mImageFolderAdapter);
+        } else {
+            mImageFolderAdapter.updateAll(mImageFolders);
+        }
     }
 
     /**
@@ -283,7 +339,8 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                     mSelectedImages.removeAll(rs);
                 }
             }
-            //mImageFolderView.setImageFolders(mImageFolders);
+            //设置文件夹,这里设置了，适配器不用再设置了
+            ifvFolderView.setImageFolders(mImageFolders);
             addImageFoldersToAdapter();
         }
 

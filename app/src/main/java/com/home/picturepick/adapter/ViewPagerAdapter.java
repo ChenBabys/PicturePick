@@ -1,6 +1,5 @@
 package com.home.picturepick.adapter;
 
-import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -12,14 +11,21 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
+/**
+ * author : CYS
+ * e-mail : 1584935420@qq.com
+ * date : 2020/9/18 16:42
+ * desc :
+ * version : 1.0
+ */
 public class ViewPagerAdapter extends PagerAdapter {
     private List<ImageView> imageList;
-    private List<Uri> imageUris;
+    private List<?> imageResource;
 
 
-    public ViewPagerAdapter(List<ImageView> imageList, List<Uri> imageUris) {
+    public ViewPagerAdapter(List<ImageView> imageList, List<?> imageResource) {
         this.imageList = imageList;
-        this.imageUris = imageUris;
+        this.imageResource = imageResource;
     }
 
     @Override
@@ -42,7 +48,7 @@ public class ViewPagerAdapter extends PagerAdapter {
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        Glide.with(imageList.get(position)).load(imageUris.get(position)).into(imageList.get(position));
+        Glide.with(imageList.get(position)).load(imageResource.get(position)).into(imageList.get(position));
         container.addView(imageList.get(position));
         return imageList.get(position);//返回一个imageview
     }

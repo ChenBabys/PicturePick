@@ -69,7 +69,11 @@ public class ImageFolderView extends FrameLayout implements ImageFolderAdapter.O
         mShadowView.setVisibility(GONE);
     }
 
-
+    /**
+     * 设置图片文件夹
+     *
+     * @param mImageFolders
+     */
     public void setImageFolders(List<ImageFolder> mImageFolders) {
         this.mImageFolders = mImageFolders;
     }

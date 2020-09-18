@@ -1,5 +1,6 @@
 package com.home.picturepick.selectImage;
 
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -114,10 +115,34 @@ public class Image implements Parcelable {
     }
 
 
+//    public static final Creator<Image> CREATOR = new Creator<Image>() {
+//        @Override
+//        public Image createFromParcel(Parcel in) {
+//            return new Image(in);
+//        }
+//
+//        @Override
+//        public Image[] newArray(int size) {
+//            return new Image[size];
+//        }
+//    };
+
+    /**
+     * 醉了，上面的这种方式居然在intent传递过程中报错，只能用下面这种方式，但是为什么教程的代码可以呢，难道是因为api改了吗
+     * 记住这个读和上面填的顺序要一致，否则报错
+     */
     public static final Creator<Image> CREATOR = new Creator<Image>() {
         @Override
         public Image createFromParcel(Parcel in) {
-            return new Image(in);
+            Image image = new Image();
+            image.id = in.readInt();
+            image.path = in.readString();
+            image.thumbPath = in.readString();
+            image.isSelect = in.readBoolean();
+            image.folderName = in.readString();
+            image.name = in.readString();
+            image.date = in.readLong();
+            return image;
         }
 
         @Override

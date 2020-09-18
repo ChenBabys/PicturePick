@@ -1,6 +1,5 @@
 package com.home.picturepick.adapter;
 
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,19 +8,27 @@ import android.widget.ImageView;
 import com.blankj.utilcode.util.SizeUtils;
 import com.bumptech.glide.Glide;
 import com.home.picturepick.R;
+import com.home.picturepick.selectImage.Image;
 
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+/**
+ * author : CYS
+ * e-mail : 1584935420@qq.com
+ * date : 2020/9/18 16:42
+ * desc :
+ * version : 1.0
+ */
 public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private List<Uri> photoList;
+    private List<String> photoList;
     private static int TYPE_ADD = 0;//加号图片
     private static int TYPE_COMMON = 1;//其他图片
     private int mMaxAlbum = 9;//最大选择图片的数量
 
-    public MainAdapter(List<Uri> photoList) {
+    public MainAdapter(List<String> photoList) {
         this.photoList = photoList;
     }
 
@@ -71,13 +78,15 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 //add.setText(position + "/" + mMaxAlbum);//用个文本器记录总数和当前坐标
                 holderAdd.onBindAdd();
                 holderAdd.add.setVisibility(View.VISIBLE);
+                //赋予子项视图为加号图
                 itemView = holderAdd.itemView;
             }
         } else if (holder instanceof MainViewHolder) {
             MainViewHolder mainViewHolder = (MainViewHolder) holder;
             if (position >= 0 && position < photoList.size()) {
-                Uri uri = photoList.get(position);
-                mainViewHolder.onBind(uri);
+                String imageUrl = photoList.get(position);
+                mainViewHolder.onBindImage(imageUrl);
+                //赋予子项视图为普通图片
                 itemView = mainViewHolder.itemView;
             }
         }
@@ -122,9 +131,23 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return photoList.size() + 1;//加一代表最后一个添加图片按钮
     }
 
-
-    public void updateAll(List<Uri> photoList) {
+    /**
+     * 更新list全部内容
+     *
+     * @param photoList
+     */
+    public void updateAll(List<String> photoList) {
         this.photoList = photoList;
+        notifyDataSetChanged();
+    }
+
+    /**
+     * 用于分页加载多页
+     *
+     * @param photoList
+     */
+    public void addAll(List<String> photoList) {
+        this.photoList.addAll(photoList);
         notifyDataSetChanged();
     }
 
@@ -176,11 +199,11 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             img = (ImageView) itemView;
         }
 
-        public void onBind(Uri imgUri) {
+        public void onBindImage(String imgRes) {
             //img.setImageURI(imgUri);
             //使用Glide加载图片就不要用view.setTag(Viewholder)了，去掉上面的tag
             //另外用glide也不会造成资源使用过多的问题。不会像上面setImageURI那样卡,也不会让那些太大的照片造成闪退
-            Glide.with(img).load(imgUri).into(img);
+            Glide.with(img).load(imgRes).into(img);
         }
     }
 
