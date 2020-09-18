@@ -5,26 +5,26 @@
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
     <root-path
         name="root"
-        path="" />
-<!--    //代表设备的根目录new File("/");-->
+        path="." />
+    <!--    //代表设备的根目录new File("/");-->
     <files-path
         name="files"
-        path="images" />
-<!--    //context.getFilesDir()-->
+        path="." />
+    <!--    //context.getFilesDir()-->
     <cache-path
         name="cache"
-        path="caches" />
-<!--    //context.getCacheDir()-->
+        path="." />
+    <!--    //context.getCacheDir()-->
     <external-path
-        name="external"
-        path="externals" />
-<!--    //Environment.getExternalStorageDirectory()-->
+        name="images"
+        path="." />
+    <!--    //Environment.getExternalStorageDirectory()-->
     <external-files-path
-        name="name"
-        path="path" />
-<!--    //context.getExternalFilesDirs()-->
+        name="external-files"
+        path="." />
+    <!--    //context.getExternalFilesDirs()-->
     <external-cache-path
-        name="name"
-        path="path" />
-<!--    //getExternalCacheDirs()-->
+        name="external-cache"
+        path="." />
+    <!--    //getExternalCacheDirs()-->
 </paths>

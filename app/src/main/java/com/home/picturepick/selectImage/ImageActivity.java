@@ -3,6 +3,7 @@ package com.home.picturepick.selectImage;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -13,23 +14,22 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
-import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.blankj.utilcode.util.ToastUtils;
+import com.blankj.utilcode.util.BarUtils;
+import com.blankj.utilcode.util.LogUtils;
+import com.home.picturepick.BuildConfig;
 import com.home.picturepick.R;
 
 import java.io.File;
@@ -37,13 +37,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class ImageActivity extends AppCompatActivity {
-    private TextView titleBack, titleFinish, imageMore, imagePreview;
+public class ImageActivity extends AppCompatActivity implements View.OnClickListener {
+    private TextView titleBack, titleFinish, imageFolder, imagePreview;
+    private ConstraintLayout cslTop;
     private RecyclerView rlvImages;
     private boolean mHasCamera = true;
     // 返回选择图片列表的EXTRA_KEY
@@ -68,36 +68,100 @@ public class ImageActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        cslTop = this.findViewById(R.id.csl_top);
         titleBack = this.findViewById(R.id.title_back);
         titleFinish = this.findViewById(R.id.title_finish);
-        imageMore = this.findViewById(R.id.image_more);
+        imageFolder = this.findViewById(R.id.image_folder);
         imagePreview = this.findViewById(R.id.image_preview);
         rlvImages = this.findViewById(R.id.rlv_images);
+        //为四个按钮添加点击事件
+        titleBack.setOnClickListener(this);
+        titleFinish.setOnClickListener(this);
+        imageFolder.setOnClickListener(this);
+        imagePreview.setOnClickListener(this);
     }
 
     private void initImages() {
+        //设置状态栏的颜色(这个是第三方的工具，布兰柯基github找AndroidUtilCode)
+        BarUtils.setStatusBarColor(ImageActivity.this, ContextCompat.getColor(this, R.color.colorBlack));
+        //设置了状态栏为黑色之后，状态栏的高度没了。所以要加上这一句保持高度。
+        BarUtils.addMarginTopEqualStatusBarHeight(cslTop);
+        //异步加载图片
         LoaderManager.getInstance(this).initLoader(0, null, mLoaderCallbacks);
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.title_back:
+                finish();
+                break;
+            case R.id.title_finish:
+                Intent intent = new Intent();
+                intent.putParcelableArrayListExtra(EXTRA_RESULT, (ArrayList<? extends Parcelable>) mSelectedImages);
+                setResult(RESULT_OK, intent);
+                finish();
+                break;
+            case R.id.image_folder:
+
+                break;
+            case R.id.image_preview:
+
+                break;
+            default:
+                break;
+
+        }
+
     }
 
 
     private void addImagesToAdapter(ArrayList<Image> images) {
         if (imagesAdapter == null) {
-            imagesAdapter = new ImagesAdapter(images);
+            imagesAdapter = new ImagesAdapter(images, mSelectedImages);
             imagesAdapter.setOnItemClickListener(new ImagesAdapter.OnItemClickListener() {
                 @Override
-                public void onClick(View view, int position) {
+                public void onClick(View view, Image image, int position) {
                     //ToastUtils.showShort(position);
-                    if (position == 0) {
+                    //如果是第一个就打开相机
+                    if (position == 0)
                         onCameraClick();
-                    }else {
-                        view.setSelected(true);
-                    }
+
+
+//                    else {
+//                        //奇怪。父布局也可以让子布局的drawable选中的么
+//                        view.setSelected(true);
+//                    }
 
                 }
 
                 @Override
-                public void onLongClick(View view, int position) {
+                public void onLongClick(View view, Image image, int position) {
 
+                }
+
+                @Override
+                public void onSelectImageCount(int count) {
+                    if (count == 0) {
+                        //预览按钮
+                        imagePreview.setClickable(false);
+                        imagePreview.setText("预览");
+                        imagePreview.setTextColor(ContextCompat.getColor(ImageActivity.this, R.color.colorAccentGray));
+                    } else {
+                        imagePreview.setClickable(true);
+                        imagePreview.setText(String.format(getString(R.string.String_preview), count));
+                        imagePreview.setTextColor(ContextCompat.getColor(ImageActivity.this, R.color.colorAccent));
+                    }
+                }
+
+                @Override
+                public void onSelectImageList(List<Image> images) {
+                    //选中的图片list会通过设置适配器传递给适配器，而后又通过回调回来给予这边的选中图片list.
+                    //这是为了同步这个活动和适配器选中的图片，无论怎么选择减少或增加都会同步，
+                    // 可以避免使用notifyDataSetChanged时候选中的被刷新掉等等作用。
+                    //还有一个重要作用就是把适配器同步更新的选中的图片回传回来，然后准备给点完成的按钮传递给使用的地方。
+                    mSelectedImages = images;
                 }
             });
             rlvImages.setHasFixedSize(true);
@@ -115,7 +179,9 @@ public class ImageActivity extends AppCompatActivity {
 
     }
 
-
+    /**
+     * loader居然在api28之后不再推荐使用了（没过时），叼了，推荐使用ViewModels和LiveData结合了
+     */
     private final LoaderManager.LoaderCallbacks<Cursor> mLoaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
         private final String[] IMAGE_PROJECTION = {
                 MediaStore.Images.Media.DATA,
@@ -131,12 +197,13 @@ public class ImageActivity extends AppCompatActivity {
         @Override
         public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
             return new CursorLoader(ImageActivity.this, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, IMAGE_PROJECTION,
-                    null, null, IMAGE_PROJECTION[2]);
+                    null, null, IMAGE_PROJECTION[2] + " DESC");//加上+ " DESC"，可以按照添加的时间从新到旧排序
         }
 
         @Override
         public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
             if (data != null) {
+                //存储从本地加载完毕的全部图片
                 ArrayList<Image> images = new ArrayList<>();
                 //是否显示照相图片
                 if (mHasCamera) {
@@ -216,7 +283,6 @@ public class ImageActivity extends AppCompatActivity {
                     mSelectedImages.removeAll(rs);
                 }
             }
-            ///TODO    mImageFolderView.setImageFolders(mImageFolders);
             //mImageFolderView.setImageFolders(mImageFolders);
             addImageFoldersToAdapter();
         }
@@ -261,7 +327,7 @@ public class ImageActivity extends AppCompatActivity {
             if (takePhotoImageFile != null) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     ///7.0以上要通过FileProvider将File转化为Uri
-                    mImageUri = FileProvider.getUriForFile(this, this.getPackageName() + ".fileprovider", takePhotoImageFile);
+                    mImageUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".fileprovider", takePhotoImageFile);
                 } else {
                     //7.0以下则直接使用Uri的fromFile方法将File转化为Uri
                     mImageUri = Uri.fromFile(takePhotoImageFile);
@@ -277,20 +343,14 @@ public class ImageActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == TAKE_PHOTO) {
+            galleryAddPictures();//保存到相册
             //缩略图信息是储存在返回的intent中的Bundle中的，对应Bundle中的键为data，因此从Intent中取出 Bundle再根据data取出来Bitmap即可
             // Bundle extras = data.getExtras();
             // Bitmap bitmap = (Bitmap) extras.get("data");
 //            BitmapFactory.decodeFile(this.getContentResolver().)
 //            galleryAddPictures(mImageUri);
 //            getSupportLoaderManager().restartLoader(0, null, mLoaderCallbacks);
-            galleryAddPictures();//保存到相册
-            //下面的代码不过是打印一下看看。。。
-            try {
-                Bitmap bitmap = BitmapFactory.decodeStream(this.getContentResolver().openInputStream(mImageUri));
-                Log.i("take photo", bitmap + "");
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+
         }
     }
 
@@ -314,8 +374,10 @@ public class ImageActivity extends AppCompatActivity {
         //把文件插入到系统图库
         try {
             MediaStore.Images.Media.insertImage(this.getContentResolver(), takePhotoImageFile.getAbsolutePath(), takePhotoImageFile.getName(), null);
+            LogUtils.d(takePhotoImageFile.getAbsolutePath() + "\n" + takePhotoImageFile.getName());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            LogUtils.d(e.getMessage());
         }
         //通知图库更新
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,

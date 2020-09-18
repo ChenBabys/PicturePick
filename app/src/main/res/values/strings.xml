@@ -3,4 +3,5 @@
     <string name="image_and_film">图片和视频</string>
     <string name="complete">完成</string>
     <string name="preview">预览</string>
+    <string name="String_preview">预览(%d/9)</string>
 </resources>
