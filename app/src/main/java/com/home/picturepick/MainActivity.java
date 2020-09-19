@@ -97,6 +97,13 @@ public class MainActivity extends AppCompatActivity {
         } else {
             adapter.updateAll(photos);
         }
+
+
+        title.setOnClickListener(view -> {
+            startActivity(new Intent(MainActivity.this, CollpsingActivity.class));
+        });
+
+
     }
 
 
