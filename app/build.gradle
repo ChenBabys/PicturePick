@@ -40,4 +40,7 @@ dependencies {
     implementation 'com.blankj:utilcodex:1.29.0'
     //图片加载库
     implementation 'com.github.bumptech.glide:glide:4.8.0'
+
+    //腾讯官方的替代sp的工具，性能优越
+    implementation 'com.tencent:mmkv:1.0.19'
 }

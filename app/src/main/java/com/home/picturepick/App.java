@@ -12,12 +12,17 @@ import com.blankj.utilcode.util.LogUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
 import com.bumptech.glide.request.RequestOptions;
+import com.tencent.mmkv.MMKV;
 
 public class App extends Application {
 
     @Override
     public void onCreate() {
         super.onCreate();
+        //替代sp的腾讯缓存库初始化
+        MMKV.initialize(this);
+
+
         //可以不初始化
 //        Glide.init(getApplicationContext(),
 //                new GlideBuilder().setDefaultRequestOptions(new RequestOptions()

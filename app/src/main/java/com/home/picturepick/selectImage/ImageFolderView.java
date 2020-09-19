@@ -13,6 +13,9 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.FrameLayout;
 
+import com.blankj.utilcode.util.LogUtils;
+import com.home.picturepick.R;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -139,10 +142,6 @@ public class ImageFolderView extends FrameLayout implements ImageFolderAdapter.O
         });
     }
 
-    public boolean isShowing() {
-        return mShow;
-    }
-
 
     @Override
     //测量
@@ -157,6 +156,11 @@ public class ImageFolderView extends FrameLayout implements ImageFolderAdapter.O
         //开始的时候，移下去
         mImageFolderRv.setTranslationY(mImageFolderHeight);
     }
+
+    public boolean isShowing() {
+        return mShow;
+    }
+
 
     @Override
     public void onItemClick(View view, ImageFolder imageFolder, int position) {

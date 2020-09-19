@@ -21,6 +21,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.view.View;
@@ -31,7 +32,9 @@ import com.blankj.utilcode.util.BarUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.home.picturepick.BuildConfig;
 import com.home.picturepick.R;
+import com.home.picturepick.constant.Constant;
 import com.home.picturepick.fragment.PreViewDialogFragment;
+import com.tencent.mmkv.MMKV;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -49,7 +52,7 @@ import java.util.Locale;
  * desc :
  * version : 1.0
  */
-public class ImageActivity extends AppCompatActivity implements View.OnClickListener {
+public class ImageActivity extends AppCompatActivity implements View.OnClickListener, ImageFolderView.ImageFolderViewListener {
     private TextView titleBack, titleFinish, imageFolder, imagePreview;
     private ConstraintLayout cslTop;
     private RecyclerView rlvImages;
@@ -85,6 +88,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         imagePreview = this.findViewById(R.id.image_preview);
         rlvImages = this.findViewById(R.id.rlv_images);
         ifvFolderView = this.findViewById(R.id.ifv_images_folder);
+        ifvFolderView.setListener(this);
         //为四个按钮添加点击事件
         titleBack.setOnClickListener(this);
         titleFinish.setOnClickListener(this);
@@ -132,15 +136,12 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.image_folder:
                 if (ifvFolderView.isShowing()) {
-                    ifvFolderView.setVisibility(View.GONE);
                     ifvFolderView.hide();
                 } else {
-                    ifvFolderView.setVisibility(View.VISIBLE);
                     ifvFolderView.show();
                 }
                 break;
             case R.id.image_preview:
-                //预览图片
                 //预览图片
                 List<String> imageStrs = new ArrayList<>();
                 PreViewDialogFragment fragment = new PreViewDialogFragment();
@@ -175,10 +176,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                     if (position == 0)
                         onCameraClick();
                     //预览图片
-                    PreViewDialogFragment fragment = new PreViewDialogFragment();
-                    //fragment.setImagePathList(photoList);
-                    fragment.setPosition(position);
-                    fragment.show(getSupportFragmentManager(), "PreViewDialogFragment");
+                    //  setAllPreView(photoList, position);
 
 
 //                        //奇怪。父布局也可以让子布局的drawable选中的么
@@ -221,6 +219,37 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
             imagesAdapter.updateAll(images);
         }
 
+    }
+
+    @Override
+    public void onSelectFolder(ImageFolderView imageFolderView, ImageFolder imageFolders) {
+        //如果选择了文件夹则把图片数据重复赋予图片适配器
+        addImagesToAdapter(imageFolders.getImages());
+        rlvImages.scrollToPosition(0);//回到顶部
+        this.imageFolder.setText(imageFolders.getName());//把名字给点击的textview
+    }
+
+    @Override
+    public void onDismiss() {
+
+    }
+
+    @Override
+    public void onShow() {
+
+    }
+
+
+    /**
+     * 在相册里打开预览文件太多了是个耗时操作。用异步吧
+     */
+    private void setAllPreView(List<Image> photoList, int position) {
+//        //新增的一个保存到本地的设置，方便预览图片加载快点
+//        MMKV.defaultMMKV().encode(Constant.IAMGES_PUT, (Parcelable) photoList);
+//
+//        PreViewDialogFragment fragment = new PreViewDialogFragment();
+//        fragment.setPosition(position);
+//        fragment.show(getSupportFragmentManager(), "");
     }
 
     /**
@@ -441,5 +470,6 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                 Uri.fromFile(takePhotoImageFile));
         sendBroadcast(mediaScanIntent);
     }
+
 
 }

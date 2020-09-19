@@ -21,7 +21,6 @@ import android.widget.TextView;
 
 import com.home.picturepick.R;
 import com.home.picturepick.adapter.ViewPagerAdapter;
-import com.home.picturepick.selectImage.Image;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +67,7 @@ public class PreViewDialogFragment extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.dialog_fragment_pre_view, null, false);
+        return inflater.inflate(R.layout.preview_page_common, null, false);
     }
 
 

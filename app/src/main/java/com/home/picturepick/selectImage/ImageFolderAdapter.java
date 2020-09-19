@@ -6,10 +6,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.home.picturepick.R;
+
 import java.util.List;
 
 /**
@@ -38,12 +41,18 @@ public class ImageFolderAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     /**
      * 添加一个相同的图片容器
      * 全部代码实现布局
+     * 两种方法：
+     * 1.像这种inflateb布局的不要把parent放进去会报错的。要写null。（两个参数）
+     * 2.或者如果你想填进去那就再多加一个attachToRoot=false的参数在后面。（三个参数）
+     * 具体理由可以查https://www.jianshu.com/p/dacb6dea891a
+     * 但是上面的第一种方法虽然解决了奔溃的问题，但是却啥子项也不显示，直接只有容器无内容。
+     * 所以只有第二种方法可用。
+     * * @param parent
      *
-     * @param parent
      * @return
      */
     private View getItemView(ViewGroup parent) {
-        return LayoutInflater.from(parent.getContext()).inflate(R.layout.image_folder_item, parent);
+        return LayoutInflater.from(parent.getContext()).inflate(R.layout.image_folder_item, parent, false);
     }
 
 

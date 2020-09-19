@@ -155,7 +155,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
      */
     @Override
     public int getItemCount() {
-        return photoList.size() + 1;//加一代表最后一个添加图片按钮
+        return photoList.size() + 1;//加一代表相机按钮
     }
 
 
