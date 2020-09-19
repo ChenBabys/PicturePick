@@ -24,8 +24,8 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<String> photoList;
-    private static int TYPE_ADD = 0;//加号图片
-    private static int TYPE_COMMON = 1;//其他图片
+    private static final int TYPE_ADD = 0;//加号图片
+    private static final int TYPE_COMMON = 1;//其他图片
     private int mMaxAlbum = 9;//最大选择图片的数量
 
     public MainAdapter(List<String> photoList) {

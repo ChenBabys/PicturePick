@@ -35,7 +35,6 @@ import com.home.picturepick.BuildConfig;
 import com.home.picturepick.R;
 import com.home.picturepick.constant.Constant;
 import com.home.picturepick.fragment.PreViewDialogFragment;
-import com.tencent.mmkv.MMKV;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -68,7 +67,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
     private File takePhotoImageFile;
     //被选中图片的集合
     private List<Image> mSelectedImages = new ArrayList<>();
-    //private List<Image> mImages = new ArrayList<>();
+    private List<Image> mImages = new ArrayList<>();
     private List<ImageFolder> mImageFolders = new ArrayList<>();
     private ImagesAdapter imagesAdapter;
     private ImageFolderAdapter mImageFolderAdapter;
@@ -167,8 +166,10 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
      * @param images
      */
     private void addImagesToAdapter(ArrayList<Image> images) {
+        mImages.clear();//这种方式也许可以让应用没那么多缓存数据吧
+        mImages.addAll(images);
         if (imagesAdapter == null) {
-            imagesAdapter = new ImagesAdapter(images, mSelectedImages);
+            imagesAdapter = new ImagesAdapter(mImages, mSelectedImages);
             imagesAdapter.setOnItemClickListener(new ImagesAdapter.OnItemClickListener() {
                 @Override
                 public void onClick(View view, List<Image> photoList, int position) {
@@ -217,7 +218,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
             rlvImages.setLayoutManager(new GridLayoutManager(ImageActivity.this, 4));
             rlvImages.setAdapter(imagesAdapter);
         } else {
-            imagesAdapter.updateAll(images);
+            imagesAdapter.updateAll(mImages);
         }
 
     }
@@ -245,12 +246,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
      * 在相册里打开预览文件太多了是个耗时操作。用异步吧
      */
     private void setAllPreView(List<Image> photoList, int position) {
-//        //新增的一个保存到本地的设置，方便预览图片加载快点
-//        MMKV.defaultMMKV().encode(Constant.IAMGES_PUT, (Parcelable) photoList);
-//
-//        PreViewDialogFragment fragment = new PreViewDialogFragment();
-//        fragment.setPosition(position);
-//        fragment.show(getSupportFragmentManager(), "");
+
     }
 
     /**
@@ -348,7 +344,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                                 ImageFolder imageFolder = mImageFolders.get(mImageFolders.indexOf(folder));
                                 imageFolder.getImages().add(image);
                             }
-                        }else {
+                        } else {
                             ToastUtils.showShort("父文件夹空空如也");
                         }
                     } while (data.moveToNext());
@@ -476,5 +472,22 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         sendBroadcast(mediaScanIntent);
     }
 
+    /**
+     * 增加了一些在活动摧毁时清空list的代码，不知道是否能做到应用久了缓存少点。
+     */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mSelectedImages != null && !mSelectedImages.isEmpty()) {
+            mSelectedImages.clear();
+        }
 
+        if (mImages != null && !mImages.isEmpty()) {
+            mImages.clear();
+        }
+
+        if (mImageFolders != null && !mImageFolders.isEmpty()) {
+            mImageFolders.clear();
+        }
+    }
 }
