@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import com.blankj.utilcode.util.BarUtils;
 import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.home.picturepick.BuildConfig;
 import com.home.picturepick.R;
 import com.home.picturepick.constant.Constant;
@@ -333,18 +334,22 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                         //设置图片分类的文件夹
                         File imageFile = new File(path);
                         File folderFile = imageFile.getParentFile();//获取父文件
-                        ImageFolder folder = new ImageFolder();
-                        folder.setName(folderFile.getName());
-                        folder.setPath(folderFile.getAbsolutePath());
-                        //ImageFolder复写了equal方法，equal方法比较的是文件夹的路径
-                        if (!mImageFolders.contains(folder)) {
-                            folder.getImages().add(image);
-                            //默认相册封面
-                            folder.setAlbumPath(image.getPath());
-                            mImageFolders.add(folder);
-                        } else {
-                            ImageFolder imageFolder = mImageFolders.get(mImageFolders.indexOf(folder));
-                            imageFolder.getImages().add(image);
+                        if (folderFile != null) {
+                            ImageFolder folder = new ImageFolder();
+                            folder.setName(folderFile.getName());
+                            folder.setPath(folderFile.getAbsolutePath());
+                            //ImageFolder复写了equal方法，equal方法比较的是文件夹的路径
+                            if (!mImageFolders.contains(folder)) {
+                                folder.getImages().add(image);
+                                //默认相册封面
+                                folder.setAlbumPath(image.getPath());
+                                mImageFolders.add(folder);
+                            } else {
+                                ImageFolder imageFolder = mImageFolders.get(mImageFolders.indexOf(folder));
+                                imageFolder.getImages().add(image);
+                            }
+                        }else {
+                            ToastUtils.showShort("父文件夹空空如也");
                         }
                     } while (data.moveToNext());
                 }
