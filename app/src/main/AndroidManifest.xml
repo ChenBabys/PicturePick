@@ -15,15 +15,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".CollpsingActivity"></activity>
-        <activity android:name=".selectImage.ImageActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".CollpsingActivity" android:theme="@style/collpsingActivityStyle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".selectImage.ImageSelectActivity" />
+        <activity android:name=".AddImageActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -34,6 +34,21 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <!--静态注册一个广播接收器，专门接收的intentFilter action是时间变化，
+        在安卓8.0以后，隐式广播都不允许用静态注册的方式来接收了。除了部分特殊的之外（例如开机的可以，但是也要加上权限才行）
+        隐式广播指的是没有具体指定发送给哪个应用程序的广播。
+        所以以下的方式做时间的变化广播是不再生效了的。
+        android:exported="true"表示允许接收本程序以外的广播-->
+        <!--        <receiver-->
+        <!--            android:name=".broadcast.TimeChangeReceiver"-->
+        <!--            android:enabled="true"-->
+        <!--            android:exported="true">-->
+        <!--            <intent-filter>-->
+        <!--                <action android:name="android.intent.action.TIME_TICK" />-->
+        <!--            </intent-filter>-->
+        <!--        </receiver>-->
+
     </application>
 
 </manifest>

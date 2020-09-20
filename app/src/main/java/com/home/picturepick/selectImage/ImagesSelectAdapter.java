@@ -24,7 +24,7 @@ import java.util.List;
  * desc :
  * version : 1.0
  */
-public class ImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ImagesSelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<Image> photoList;
     private List<Image> mSelectedImages;
     private static int TYPE_CAMERA = 0;//照相机图片
@@ -32,7 +32,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private int mMaxAlbum = 9;//最大选择图片的数量
     private Image image;//单张图片资源
 
-    public ImagesAdapter(List<Image> photoList, List<Image> mSelectedImages) {
+    public ImagesSelectAdapter(List<Image> photoList, List<Image> mSelectedImages) {
         this.photoList = photoList;
         this.mSelectedImages = mSelectedImages;
     }
@@ -231,7 +231,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     //是这玩意,一个背景色
                     mask.setVisibility(image.isSelect() ? View.VISIBLE : View.GONE);
                 } else {
-                    if (mSelectedImages.size() < ImageActivity.MAX_SIZE) {
+                    if (mSelectedImages.size() < ImageSelectActivity.MAX_SIZE) {
                         image.setSelect(true);
                         mSelectedImages.add(image);
                         selectImg.setSelected(true);
@@ -274,7 +274,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        ImagesAdapter.onItemClickListener = onItemClickListener;
+        ImagesSelectAdapter.onItemClickListener = onItemClickListener;
     }
 
 }

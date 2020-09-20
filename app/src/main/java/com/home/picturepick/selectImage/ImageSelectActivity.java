@@ -21,7 +21,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.view.View;
@@ -33,7 +32,6 @@ import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.home.picturepick.BuildConfig;
 import com.home.picturepick.R;
-import com.home.picturepick.constant.Constant;
 import com.home.picturepick.fragment.PreViewDialogFragment;
 
 import java.io.File;
@@ -52,7 +50,7 @@ import java.util.Locale;
  * desc :
  * version : 1.0
  */
-public class ImageActivity extends AppCompatActivity implements View.OnClickListener, ImageFolderView.ImageFolderViewListener {
+public class ImageSelectActivity extends AppCompatActivity implements View.OnClickListener, ImageFolderView.ImageFolderViewListener {
     private TextView titleBack, titleFinish, imageFolder, imagePreview;
     private ConstraintLayout cslTop;
     private RecyclerView rlvImages;
@@ -69,13 +67,13 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
     private List<Image> mSelectedImages = new ArrayList<>();
     private List<Image> mImages = new ArrayList<>();
     private List<ImageFolder> mImageFolders = new ArrayList<>();
-    private ImagesAdapter imagesAdapter;
+    private ImagesSelectAdapter imagesAdapter;
     private ImageFolderAdapter mImageFolderAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_image);
+        setContentView(R.layout.activity_image_select);
         initView();
         initImages();
     }
@@ -98,7 +96,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
 
     private void initImages() {
         //设置状态栏的颜色(这个是第三方的工具，布兰柯基github找AndroidUtilCode)
-        BarUtils.setStatusBarColor(ImageActivity.this, ContextCompat.getColor(this, R.color.colorBlack));
+        BarUtils.setStatusBarColor(ImageSelectActivity.this, ContextCompat.getColor(this, R.color.colorBlack));
         //设置了状态栏为黑色之后，状态栏的高度没了。所以要加上这一句保持高度。
         BarUtils.addMarginTopEqualStatusBarHeight(cslTop);
         //默认先加载的选中图片，这是为了同步选中的代码，注释掉吧
@@ -169,8 +167,8 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         mImages.clear();//这种方式也许可以让应用没那么多缓存数据吧
         mImages.addAll(images);
         if (imagesAdapter == null) {
-            imagesAdapter = new ImagesAdapter(mImages, mSelectedImages);
-            imagesAdapter.setOnItemClickListener(new ImagesAdapter.OnItemClickListener() {
+            imagesAdapter = new ImagesSelectAdapter(mImages, mSelectedImages);
+            imagesAdapter.setOnItemClickListener(new ImagesSelectAdapter.OnItemClickListener() {
                 @Override
                 public void onClick(View view, List<Image> photoList, int position) {
                     //ToastUtils.showShort(position);
@@ -196,11 +194,11 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                         //预览按钮
                         imagePreview.setClickable(false);
                         imagePreview.setText("预览");
-                        imagePreview.setTextColor(ContextCompat.getColor(ImageActivity.this, R.color.colorAccentGray));
+                        imagePreview.setTextColor(ContextCompat.getColor(ImageSelectActivity.this, R.color.colorAccentGray));
                     } else {
                         imagePreview.setClickable(true);
                         imagePreview.setText(String.format(getString(R.string.String_preview), count));
-                        imagePreview.setTextColor(ContextCompat.getColor(ImageActivity.this, R.color.colorAccent));
+                        imagePreview.setTextColor(ContextCompat.getColor(ImageSelectActivity.this, R.color.colorAccent));
                     }
                 }
 
@@ -215,7 +213,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
             });
             rlvImages.setHasFixedSize(true);
             rlvImages.setNestedScrollingEnabled(false);
-            rlvImages.setLayoutManager(new GridLayoutManager(ImageActivity.this, 4));
+            rlvImages.setLayoutManager(new GridLayoutManager(ImageSelectActivity.this, 4));
             rlvImages.setAdapter(imagesAdapter);
         } else {
             imagesAdapter.updateAll(mImages);
@@ -278,7 +276,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
         @NonNull
         @Override
         public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
-            return new CursorLoader(ImageActivity.this, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, IMAGE_PROJECTION,
+            return new CursorLoader(ImageSelectActivity.this, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, IMAGE_PROJECTION,
                     null, null, IMAGE_PROJECTION[2] + " DESC");//加上+ " DESC"，可以按照添加的时间从新到旧排序
         }
 
@@ -400,7 +398,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
                 takePhoto();
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CODE);
-                Toast.makeText(ImageActivity.this, "需要您的相机权限", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ImageSelectActivity.this, "需要您的相机权限", Toast.LENGTH_SHORT).show();
             }
         }
     }

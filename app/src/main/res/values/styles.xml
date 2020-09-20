@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
@@ -6,6 +6,21 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">50sp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="Toolbar.TitleTopText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textColor">@color/colorRed</item>
+    </style>
+
+    <!--    //设置状态栏透明-->
+    <style name="collpsingActivityStyle" parent="AppTheme">
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@android:color/transparent
+        </item>
     </style>
 
 </resources>

@@ -12,4 +12,7 @@ public class Constant {
     public static final String IAMGES_PUT = "IAMGES_PUT";
 
 
+    public static final String BUS_POST_NOTIFY_TIME = "bus_post_notify_time";
+
+
 }

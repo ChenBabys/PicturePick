@@ -11,23 +11,20 @@ import android.content.ClipData;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.View;
 import android.widget.TextView;
 
 import com.blankj.utilcode.constant.PermissionConstants;
-import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PermissionUtils;
 import com.home.picturepick.adapter.MainAdapter;
 import com.home.picturepick.fragment.PreViewDialogFragment;
 import com.home.picturepick.selectImage.Image;
-import com.home.picturepick.selectImage.ImageActivity;
+import com.home.picturepick.selectImage.ImageSelectActivity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import static com.home.picturepick.selectImage.ImageActivity.EXTRA_RESULT;
+import static com.home.picturepick.selectImage.ImageSelectActivity.EXTRA_RESULT;
 
 /**
  * author : CYS
@@ -36,7 +33,7 @@ import static com.home.picturepick.selectImage.ImageActivity.EXTRA_RESULT;
  * desc :
  * version : 1.0
  */
-public class MainActivity extends AppCompatActivity {
+public class AddImageActivity extends AppCompatActivity {
 
     private RecyclerView photoList;
     private TextView title;
@@ -51,14 +48,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_add_image);
         title = this.findViewById(R.id.tv_title);
         title.setText("选择相册图片");
         photoList = this.findViewById(R.id.photoList);
         photos = new ArrayList<>();
         if (adapter == null) {
             adapter = new MainAdapter(photos);
-            photoList.setLayoutManager(new GridLayoutManager(MainActivity.this, 3));
+            photoList.setLayoutManager(new GridLayoutManager(AddImageActivity.this, 3));
             adapter.setOnItemClickListener(new MainAdapter.OnItemClickListener() {
                 @Override
                 public void onClick(View view, int position) {
@@ -79,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onLongClick(View view, int position) {
                     //如果下标不是内容外的那个加号
                     if (position != photos.size()) {
-                        AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
+                        AlertDialog dialog = new AlertDialog.Builder(AddImageActivity.this)
                                 .setTitle("是否删除这一项？")
                                 .setMessage("点击删除后将不在显示")
                                 .setCancelable(true) //点击对话框以外的区域是否让对话框消失
@@ -98,12 +95,6 @@ public class MainActivity extends AppCompatActivity {
             adapter.updateAll(photos);
         }
 
-
-        title.setOnClickListener(view -> {
-            startActivity(new Intent(MainActivity.this, CollpsingActivity.class));
-        });
-
-
     }
 
 
@@ -120,8 +111,8 @@ public class MainActivity extends AppCompatActivity {
 //                        startActivityForResult(intent, LOCAL_REQUEST_CODE);
 
                         //自定义相册选择照片
-                        startActivityForResult(new Intent(MainActivity.this,
-                                        ImageActivity.class)
+                        startActivityForResult(new Intent(AddImageActivity.this,
+                                        ImageSelectActivity.class)
                                 //这是为了同步选中的代码，但是其实真没必要，因为我再去选的时候真没必要在选中这几张图
                                 //.putParcelableArrayListExtra("selected_images", mSelectImages)
                                 , COMS_REQUEST_CODE);
