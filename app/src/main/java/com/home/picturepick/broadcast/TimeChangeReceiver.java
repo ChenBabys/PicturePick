@@ -13,6 +13,7 @@ import com.home.picturepick.R;
 import com.home.picturepick.constant.Constant;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 /**
  * author : CYS
@@ -28,7 +29,9 @@ public class TimeChangeReceiver extends BroadcastReceiver {
 
         //通知的信道id;
         String mNotificationChannelId = "Timeid";
-        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        //  NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        //代替上面这句，你进去NotificationManagerCompat.from你会发现里面已经写好了上面这一句的内容，所以下面这种写法会好些
+        NotificationManagerCompat manager = NotificationManagerCompat.from(context);
         //大于或者等于sdk26（android8.0）(创建一个消息通道)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             //为这个程序创建一个通道。可以打开系统设置查看本应用的程序信息中的通知，你可以找到这个通道的。

@@ -111,8 +111,13 @@ public class ImagesSelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             ((ConstraintLayout) holder.itemView).getChildAt(1).setVisibility(View.GONE);
         } else if (holder instanceof ImageViewHolder) {
             ImageViewHolder imageViewHolder = (ImageViewHolder) holder;
+            //因为position要留一个位置给camera,所以不能等于下标0开始。
             if (position >= 0 && position < photoList.size()) {
-                image = photoList.get(position);
+                if (position == 0) {
+                    image = new Image();//填入一张空资源
+                } else {
+                    image = photoList.get(position);
+                }
                 imageViewHolder.onBind(image, mSelectedImages);
                 itemView = imageViewHolder.itemView;
             }

@@ -71,10 +71,12 @@
             android:layout_height="match_parent"
             android:drawablePadding="5dp"
             android:gravity="center"
+            android:ellipsize="end"
             android:text="@string/image_and_film"
             android:textColor="@color/white"
             android:textSize="@dimen/dp_18"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:drawableStartCompat="@drawable/select_image_folder_or" />
 
 
         <TextView

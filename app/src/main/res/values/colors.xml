@@ -8,4 +8,6 @@
     <color name="colorBlack">#FF000000</color>
     <color name="colorRed">#FF0110</color>
     <color name="lightblack">#50000000</color>
+    <color name="colorGrayWhite">#FFF5F5F5</color>
+    <color name="blue_light">#37c6fd</color>
 </resources>

@@ -7,6 +7,8 @@ import android.view.animation.AnimationUtils;
 
 import com.home.picturepick.R;
 
+import androidx.appcompat.widget.AppCompatTextView;
+
 /**
  * author : CYS
  * e-mail : 1584935420@qq.com
@@ -14,7 +16,7 @@ import com.home.picturepick.R;
  * desc : 有底部滑出入动画的textview
  * version : 1.0
  */
-public class AniTextViw extends androidx.appcompat.widget.AppCompatTextView {
+public class AniTextViw extends AppCompatTextView {
     private Animation bottom_in;
     private Animation bottom_out;
 

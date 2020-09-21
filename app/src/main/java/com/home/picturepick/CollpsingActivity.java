@@ -25,6 +25,7 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.home.picturepick.broadcast.TimeChangeReceiver;
 import com.home.picturepick.constant.Constant;
+import com.home.picturepick.fragment.BottomSheetMyDialogFragment;
 import com.home.picturepick.lifecycle.OurLifecycleObserver;
 import com.home.picturepick.viewModel.MainViewModel;
 
@@ -40,6 +41,7 @@ public class CollpsingActivity extends AppCompatActivity {
     private TimeChangeReceiver receiver;
     private Handler handler;
     private Runnable runnable;
+    private MainViewModel model;
 
 
     @SuppressLint("SimpleDateFormat")
@@ -84,16 +86,29 @@ public class CollpsingActivity extends AppCompatActivity {
 //            fragment.showNow(getSupportFragmentManager(), "");
         });
 
+
+        textView.setOnClickListener(v -> {
+            BottomSheetMyDialogFragment fragment = new BottomSheetMyDialogFragment();
+            fragment.showNow(getSupportFragmentManager(), "");
+        });
+
+
         init();
 
 
     }
 
     private void init() {
-
-        MainViewModel model = new ViewModelProvider(this).get(MainViewModel.class);
+        //第二个参数是一个接口，给构造函数传递值的，要是MainViewModel没有设置构造函数，则可以去掉
+        model = new ViewModelProvider(this, new ViewModelProvider.Factory() {
+            @NonNull
+            @Override
+            public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+                return (T) new MainViewModel(2);
+            }
+        }).get(MainViewModel.class);
         model.plusone();
-        model.clear();
+//        model.clear();
         model.counter.observe(this, new Observer<Integer>() {
             @Override
             public void onChanged(Integer integer) {

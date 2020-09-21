@@ -75,7 +75,6 @@ android:fitsSystemWindows="true",表示该控件会出现在系统状态栏里�
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:title="@string/app_name">
 
-
             <!--layout_collapseMode设置这个值parallax，
             结合layout_collapseParallaxMultiplier的值的效果是双向滚动和视差因子。
              android:fitsSystemWindows="true",表示该控件会出现在系统状态栏里、
@@ -93,6 +92,7 @@ android:fitsSystemWindows="true",表示该控件会出现在系统状态栏里�
                 app:layout_collapseMode="parallax"
                 app:layout_collapseParallaxMultiplier="0.8" />
 
+
             <!--app:contentInsetStart="0dp"  这里设置这个是因为默认的他左边有点padding值，
             不知为何，这样标题就算设置居中也不居中了，所以才设置这个的-->
             <androidx.appcompat.widget.Toolbar
@@ -100,7 +100,29 @@ android:fitsSystemWindows="true",表示该控件会出现在系统状态栏里�
                 android:layout_width="match_parent"
                 android:layout_height="?actionBarSize"
                 app:contentInsetStart="0dp"
-                app:layout_collapseMode="pin" />
+                app:layout_collapseMode="pin"
+                app:navigationIcon="@drawable/ic_back" />
+
+            <!--layout_collapseMode设置为pin则回到顶部显示在toobar中，如果设置parallax-->
+            <!--，并给layout_collapseParallaxMultiplier的值就是回到顶部消失在状态栏
+            或者被覆盖在里面，下拉则显示-->
+            <com.home.picturepick.widget.SearchEditText
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_gravity="bottom"
+                android:layout_margin="@dimen/dp_18"
+                android:background="@drawable/search_box"
+                android:drawableStart="@drawable/ic_search"
+                android:drawableEnd="@drawable/ic_delete"
+                android:drawablePadding="5dp"
+                android:ellipsize="end"
+                android:hint="搜索框"
+                android:imeOptions="actionSearch"
+                android:lines="1"
+                android:singleLine="true"
+                app:layout_collapseMode="parallax"
+                app:layout_collapseParallaxMultiplier="0.8" />
+
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 

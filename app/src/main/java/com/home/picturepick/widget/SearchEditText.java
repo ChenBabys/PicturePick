@@ -16,6 +16,8 @@ import com.home.picturepick.R;
 
 import java.util.Objects;
 
+import androidx.appcompat.widget.AppCompatEditText;
+
 /**
  * author : CYS
  * e-mail : 1584935420@qq.com
@@ -23,7 +25,7 @@ import java.util.Objects;
  * desc : 搜索框输入框（你在使用这个控件时候右图标是默认隐藏的）
  * version : 1.0
  */
-public class SearchEditText extends androidx.appcompat.widget.AppCompatEditText {
+public class SearchEditText extends AppCompatEditText {
     private Drawable drawableLeft, drawableRight;
 
 

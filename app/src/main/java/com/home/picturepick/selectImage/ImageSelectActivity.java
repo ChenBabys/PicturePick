@@ -135,8 +135,10 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
             case R.id.image_folder:
                 if (ifvFolderView.isShowing()) {
                     ifvFolderView.hide();
+                    imageFolder.setActivated(false);
                 } else {
                     ifvFolderView.show();
+                    imageFolder.setActivated(true);
                 }
                 break;
             case R.id.image_preview:
@@ -264,12 +266,12 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
      */
     private final LoaderManager.LoaderCallbacks<Cursor> mLoaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
         private final String[] IMAGE_PROJECTION = {
-                MediaStore.Images.Media.DATA,
-                MediaStore.Images.Media.DISPLAY_NAME,
-                MediaStore.Images.Media.DATE_ADDED,
-                MediaStore.Images.Media._ID,
-                MediaStore.Images.Media.MINI_THUMB_MAGIC,
-                MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
+                MediaStore.Images.ImageColumns.DATA,
+                MediaStore.Images.ImageColumns.DISPLAY_NAME,
+                MediaStore.Images.ImageColumns.DATE_ADDED,
+                MediaStore.Images.ImageColumns._ID,
+                MediaStore.Images.ImageColumns.MINI_THUMB_MAGIC,
+                MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME};
 
 
         //创建一个CursorLoader，去异步加载相册的图片
@@ -286,9 +288,9 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
                 //存储从本地加载完毕的全部图片
                 ArrayList<Image> images = new ArrayList<>();
                 //是否显示照相图片
-                if (mHasCamera) {
-                    images.add(new Image());
-                }
+//                if (mHasCamera) {
+//                    images.add(new Image());
+//                }
                 //添加一个全部图片的一个图片文件夹
                 ImageFolder defaultFolder = new ImageFolder();
                 defaultFolder.setName("全部照片");

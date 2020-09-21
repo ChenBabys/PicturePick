@@ -153,7 +153,7 @@ public class ImageFolderView extends FrameLayout implements ImageFolderAdapter.O
         layoutParams.height = mImageFolderHeight;//把rv列表的高度也设置为这个高度
         mImageFolderRv.setLayoutParams(layoutParams);
         measureChild(mImageFolderRv, widthMeasureSpec, heightMeasureSpec);//测量子项mImageFolderRv
-        //开始的时候，移下去
+        //开始的时候，移动下去
         mImageFolderRv.setTranslationY(mImageFolderHeight);
     }
 
