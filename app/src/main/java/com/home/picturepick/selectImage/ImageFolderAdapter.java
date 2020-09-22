@@ -24,6 +24,12 @@ import java.util.List;
  */
 public class ImageFolderAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<ImageFolder> FolderList;
+    private boolean mHasCamera;
+
+    public ImageFolderAdapter(List<ImageFolder> folderList, boolean mHasCamera) {
+        this.FolderList = folderList;
+        this.mHasCamera = mHasCamera;
+    }
 
     public ImageFolderAdapter(List<ImageFolder> FolderList) {
         this.FolderList = FolderList;
@@ -62,7 +68,7 @@ public class ImageFolderAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         FolderViewHolder folderViewHolder = (FolderViewHolder) holder;
         if (position >= 0 && position < FolderList.size()) {
             ImageFolder imageFolder = FolderList.get(position);
-            folderViewHolder.onBind(imageFolder);
+            folderViewHolder.onBind(imageFolder, mHasCamera);
             View itemView = folderViewHolder.itemView;//一项的点击事件
             if (onItemClickListener != null) {
                 itemView.setOnClickListener(view -> {
@@ -126,10 +132,14 @@ public class ImageFolderAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
 
         @SuppressLint("SetTextI18n")
-        public void onBind(ImageFolder imageFolder) {
+        public void onBind(ImageFolder imageFolder, boolean mHasCamera) {
             Glide.with(img).load(imageFolder.getAlbumPath()).into(img);
             title.setText(imageFolder.getName());
-            count.setText(imageFolder.getImages().size() + "张");
+            if (mHasCamera)
+                //减一是因为有相机时候填入了一张空白图片在下标为0的位置。所以真实的图片会少一张
+                count.setText(imageFolder.getImages().size() - 1 + "张");
+            else
+                count.setText(imageFolder.getImages().size() + "张");
         }
     }
 

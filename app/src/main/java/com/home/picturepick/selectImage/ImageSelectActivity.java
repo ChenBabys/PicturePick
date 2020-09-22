@@ -1,18 +1,5 @@
 package com.home.picturepick.selectImage;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.CursorLoader;
-import androidx.loader.content.Loader;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -21,11 +8,26 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.core.widget.ContentLoadingProgressBar;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.blankj.utilcode.util.BarUtils;
 import com.blankj.utilcode.util.LogUtils;
@@ -55,6 +57,7 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
     private ConstraintLayout cslTop;
     private RecyclerView rlvImages;
     private ImageFolderView ifvFolderView;
+    private ContentLoadingProgressBar progressBar;
     private boolean mHasCamera = true;
     // 返回选择图片列表的EXTRA_KEY
     public static final String EXTRA_RESULT = "EXTRA_RESULT";
@@ -69,6 +72,9 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
     private List<ImageFolder> mImageFolders = new ArrayList<>();
     private ImagesSelectAdapter imagesAdapter;
     private ImageFolderAdapter mImageFolderAdapter;
+    private Handler savePicHandler, readImageListHandler;
+    private Runnable savePicRunnable, readImageListRunnable;
+    private PreViewDialogFragment prefragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,9 +82,11 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
         setContentView(R.layout.activity_image_select);
         initView();
         initImages();
+        initPreImageData();//预先加载预览图片的数据
     }
 
     private void initView() {
+        progressBar = this.findViewById(R.id.clp_loading);
         cslTop = this.findViewById(R.id.csl_top);
         titleBack = this.findViewById(R.id.title_back);
         titleFinish = this.findViewById(R.id.title_finish);
@@ -104,6 +112,35 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
         //异步加载图片
         LoaderManager.getInstance(this).initLoader(0, null, mLoaderCallbacks);
     }
+
+    /**
+     * 预先加载预览的全部照片
+     */
+    private void initPreImageData() {
+        readImageListHandler = new Handler();
+        ArrayList<String> preImageList = new ArrayList<>();
+        prefragment = new PreViewDialogFragment();
+        readImageListRunnable = new Runnable() {
+            @Override
+            public void run() {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mImages != null && !mImages.isEmpty()) {
+                            for (Image image : mImages) {
+                                preImageList.add(image.getPath());
+                            }
+                            //读取完了
+                            prefragment.setImagePathList(preImageList);
+                            LogUtils.d("读取完了");
+                        }
+                    }
+                });
+            }
+        };
+
+    }
+
 
     /**
      * //默认先加载的选中图片
@@ -169,7 +206,7 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
         mImages.clear();//这种方式也许可以让应用没那么多缓存数据吧
         mImages.addAll(images);
         if (imagesAdapter == null) {
-            imagesAdapter = new ImagesSelectAdapter(mImages, mSelectedImages);
+            imagesAdapter = new ImagesSelectAdapter(mImages, mSelectedImages, mHasCamera);
             imagesAdapter.setOnItemClickListener(new ImagesSelectAdapter.OnItemClickListener() {
                 @Override
                 public void onClick(View view, List<Image> photoList, int position) {
@@ -178,7 +215,7 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
                     if (position == 0)
                         onCameraClick();
                     //预览图片
-                    //  setAllPreView(photoList, position);
+                    setAllPreView(photoList, position);
 
 
 //                        //奇怪。父布局也可以让子布局的drawable选中的么
@@ -228,7 +265,8 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
         //如果选择了文件夹则把图片数据重复赋予图片适配器
         addImagesToAdapter(imageFolders.getImages());
         rlvImages.scrollToPosition(0);//回到顶部
-        this.imageFolder.setText(imageFolders.getName());//把名字给点击的textview
+        imageFolder.setText(imageFolders.getName());//把名字给点击的textview
+        imageFolder.setActivated(false);
     }
 
     @Override
@@ -246,7 +284,8 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
      * 在相册里打开预览文件太多了是个耗时操作。用异步吧
      */
     private void setAllPreView(List<Image> photoList, int position) {
-
+        prefragment.setPosition(position);
+        prefragment.show(getSupportFragmentManager(), "");
     }
 
     /**
@@ -254,7 +293,7 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
      */
     private void addImageFoldersToAdapter() {
         if (mImageFolderAdapter == null) {
-            mImageFolderAdapter = new ImageFolderAdapter(mImageFolders);
+            mImageFolderAdapter = new ImageFolderAdapter(mImageFolders, mHasCamera);
             ifvFolderView.setAdapter(mImageFolderAdapter);
         } else {
             mImageFolderAdapter.updateAll(mImageFolders);
@@ -278,19 +317,23 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
         @NonNull
         @Override
         public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
+            progressBar.setVisibility(View.VISIBLE);
+            progressBar.show();
             return new CursorLoader(ImageSelectActivity.this, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, IMAGE_PROJECTION,
                     null, null, IMAGE_PROJECTION[2] + " DESC");//加上+ " DESC"，可以按照添加的时间从新到旧排序
         }
 
         @Override
         public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
+            progressBar.setVisibility(View.GONE);
+            progressBar.hide();
             if (data != null) {
                 //存储从本地加载完毕的全部图片
-                ArrayList<Image> images = new ArrayList<>();
-                //是否显示照相图片
-//                if (mHasCamera) {
-//                    images.add(new Image());
-//                }
+                ArrayList<Image> imagesList = new ArrayList<>();
+                //是否显示照相图片，这是初次加载给的相机按钮
+                if (mHasCamera) {
+                    imagesList.add(new Image());
+                }
                 //添加一个全部图片的一个图片文件夹
                 ImageFolder defaultFolder = new ImageFolder();
                 defaultFolder.setName("全部照片");
@@ -316,7 +359,7 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
                         image.setDate(dateTime);
                         image.setThumbPath(thumbPath);
                         image.setFolderName(bucket);
-                        images.add(image);
+                        imagesList.add(image);
 
                         //如果是被选中的图片
                         if (mSelectedImages.size() > 0) {
@@ -336,6 +379,10 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
                             folder.setPath(folderFile.getAbsolutePath());
                             //ImageFolder复写了equal方法，equal方法比较的是文件夹的路径
                             if (!mImageFolders.contains(folder)) {
+                                //如果要显示相机按钮，那么只要不包含当前文件夹就新增一个相机按钮，这是点击了文件夹后替换数据显示的时候添加的
+                                if (mHasCamera) {
+                                    folder.getImages().add(0, new Image());
+                                }
                                 folder.getImages().add(image);
                                 //默认相册封面
                                 folder.setAlbumPath(image.getPath());
@@ -349,14 +396,16 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
                         }
                     } while (data.moveToNext());
                 }
-
-                addImagesToAdapter(images);
+                //预先加载预览的全部图片
+                readImageListHandler.post(readImageListRunnable);
+                //添加到显示的列表适配器
+                addImagesToAdapter(imagesList);
                 //全部照片
-                defaultFolder.getImages().addAll(images);
+                defaultFolder.getImages().addAll(imagesList);
                 if (mHasCamera) {
-                    defaultFolder.setAlbumPath(images.size() > 1 ? images.get(1).getPath() : null);
+                    defaultFolder.setAlbumPath(imagesList.size() > 1 ? imagesList.get(1).getPath() : null);
                 } else {
-                    defaultFolder.setAlbumPath(images.size() > 0 ? images.get(0).getPath() : null);
+                    defaultFolder.setAlbumPath(imagesList.size() > 0 ? imagesList.get(0).getPath() : null);
                 }
                 if (mSelectedImages.size() > 0) {
                     List<Image> rs = new ArrayList<>();
@@ -430,16 +479,20 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == TAKE_PHOTO) {
-            galleryAddPictures();//保存到相册
-            //缩略图信息是储存在返回的intent中的Bundle中的，对应Bundle中的键为data，因此从Intent中取出 Bundle再根据data取出来Bitmap即可
-            // Bundle extras = data.getExtras();
-            // Bitmap bitmap = (Bitmap) extras.get("data");
-//            BitmapFactory.decodeFile(this.getContentResolver().)
-//            galleryAddPictures(mImageUri);
-//            getSupportLoaderManager().restartLoader(0, null, mLoaderCallbacks);
-
+            savePicRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    //在UI线程中异步执行以下代码更新UI
+                    imageFolder.setText("全部图片");//拍照完后照片填入列表就更新按钮文本
+                    galleryAddPictures();//保存到相册
+                    LogUtils.d("剑来", Thread.currentThread().getName());
+                }
+            };
+            savePicHandler = new Handler();
+            savePicHandler.postDelayed(savePicRunnable, 200);//稍微延时
         }
     }
+
 
     private File createImageFile() {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.CHINA).format(new Date());//中国时区
@@ -489,5 +542,18 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
         if (mImageFolders != null && !mImageFolders.isEmpty()) {
             mImageFolders.clear();
         }
+
+        if (savePicHandler != null) {
+            savePicHandler.removeCallbacks(savePicRunnable);
+            savePicHandler = null;
+            savePicRunnable = null;
+        }
+
+        if (readImageListHandler != null) {
+            readImageListHandler.removeCallbacks(readImageListRunnable);
+            readImageListHandler = null;
+            readImageListHandler = null;
+        }
+
     }
 }

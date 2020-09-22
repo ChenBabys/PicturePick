@@ -56,6 +56,18 @@
         app:layout_constraintBottom_toTopOf="@id/csl_bottom"
         app:layout_constraintTop_toBottomOf="@id/csl_top" />
 
+    <androidx.core.widget.ContentLoadingProgressBar
+        android:id="@+id/clp_loading"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:indeterminate="true"
+        android:visibility="gone"
+        android:indeterminateDrawable="@drawable/proccessbar_rotate"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/csl_bottom"
@@ -70,13 +82,13 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:drawablePadding="5dp"
-            android:gravity="center"
             android:ellipsize="end"
+            android:gravity="center"
             android:text="@string/image_and_film"
             android:textColor="@color/white"
             android:textSize="@dimen/dp_18"
-            app:layout_constraintStart_toStartOf="parent"
-            app:drawableStartCompat="@drawable/select_image_folder_or" />
+            app:drawableStartCompat="@drawable/select_image_folder_or"
+            app:layout_constraintStart_toStartOf="parent" />
 
 
         <TextView

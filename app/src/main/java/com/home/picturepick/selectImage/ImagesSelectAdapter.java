@@ -1,8 +1,10 @@
 package com.home.picturepick.selectImage;
 
 
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -31,10 +33,17 @@ public class ImagesSelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private static int TYPE_IMAGE = 1;//其他图片
     private int mMaxAlbum = 9;//最大选择图片的数量
     private Image image;//单张图片资源
+    private boolean mHasCamera;//是否显示相机按钮
 
     public ImagesSelectAdapter(List<Image> photoList, List<Image> mSelectedImages) {
         this.photoList = photoList;
         this.mSelectedImages = mSelectedImages;
+    }
+
+    public ImagesSelectAdapter(List<Image> photoList, List<Image> mSelectedImages, boolean mHasCamera) {
+        this.photoList = photoList;
+        this.mSelectedImages = mSelectedImages;
+        this.mHasCamera = mHasCamera;
     }
 
     @NonNull
@@ -69,10 +78,11 @@ public class ImagesSelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         int pad = SizeUtils.dp2px(1);
         layoutParams.setMargins(pad, pad, pad, pad);
         constrain.setLayoutParams(layoutParams);
+        constrain.setBackgroundColor(ContextCompat.getColor(parent.getContext(), R.color.colorBlack));//设置黑色背景
         //图片
         ImageView img = new ImageView(parent.getContext());
-        ConstraintLayout.LayoutParams imgParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT,
-                ConstraintLayout.LayoutParams.MATCH_PARENT);
+        ConstraintLayout.LayoutParams imgParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT
+                , ConstraintLayout.LayoutParams.MATCH_PARENT);
         img.setLayoutParams(imgParams);
         img.setScaleType(ImageView.ScaleType.CENTER_CROP);
         //选中的图片显示的select
@@ -109,15 +119,18 @@ public class ImagesSelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             itemView = holderCamera.itemView;
             //如果是相机按钮,则隐藏选中与否的按钮
             ((ConstraintLayout) holder.itemView).getChildAt(1).setVisibility(View.GONE);
+            //如果是显示相机按钮的图标则重新设置布局参数。
+            ConstraintLayout.LayoutParams imgresetParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                    ConstraintLayout.LayoutParams.WRAP_CONTENT);//这两项不设置为0,就不会满屏
+            imgresetParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+            imgresetParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
+            imgresetParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
+            imgresetParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
+            ((ConstraintLayout) holder.itemView).getChildAt(0).setLayoutParams(imgresetParams);//上四项设置居中
         } else if (holder instanceof ImageViewHolder) {
             ImageViewHolder imageViewHolder = (ImageViewHolder) holder;
-            //因为position要留一个位置给camera,所以不能等于下标0开始。
             if (position >= 0 && position < photoList.size()) {
-                if (position == 0) {
-                    image = new Image();//填入一张空资源
-                } else {
-                    image = photoList.get(position);
-                }
+                image = photoList.get(position);
                 imageViewHolder.onBind(image, mSelectedImages);
                 itemView = imageViewHolder.itemView;
             }
@@ -149,18 +162,22 @@ public class ImagesSelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
      */
     @Override
     public int getItemViewType(int position) {
-        return position == 0 ? TYPE_CAMERA : TYPE_IMAGE;//就这一个判断就可以了。
+        if (mHasCamera)
+            return position == 0 ? TYPE_CAMERA : TYPE_IMAGE;//就这一个判断就可以了相应返回类型建造列表了
+        else
+            return TYPE_IMAGE;//只返回图片类型建造列表
     }
 
     /**
-     * 因为photoList中是不包含相机图片，
-     * 加号完全是由适配器这边更具type添加的，所以适配器的所有项的总数一定photoList的长度加一。
+     * 这里长度不用加一了，
+     * 因为photoList的数组每次传递过来如果有相机按钮都会新增一个空白图片顶替位置，
+     * 所以有相机的时候每次传递的photoList都会比实际的长度多1个.
      *
      * @return
      */
     @Override
     public int getItemCount() {
-        return photoList.size() + 1;//加一代表相机按钮
+        return photoList.size();
     }
 
 
@@ -203,7 +220,6 @@ public class ImagesSelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         public void onBindCamera() {
             mCamera.setImageResource(R.drawable.ic_camera);
-            mCamera.setBackgroundColor(ContextCompat.getColor(mCamera.getContext(), R.color.colorBlack));
         }
     }
 
@@ -257,8 +273,6 @@ public class ImagesSelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             // 这时候这两句代码就能帮你选中之前选的图片。而不是又得重新选择
             selectImg.setSelected(image.isSelect());
             mask.setVisibility(image.isSelect() ? View.VISIBLE : View.GONE);
-
-
         }
     }
 

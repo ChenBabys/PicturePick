@@ -14,10 +14,12 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.FrameLayout;
 
 import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.home.picturepick.R;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -57,12 +59,14 @@ public class ImageFolderView extends FrameLayout implements ImageFolderAdapter.O
 
     private void init(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         mShadowView = new View(context);
-        mShadowView.setBackgroundColor(Color.parseColor(mShadowViewColor));
+        mShadowView.setBackgroundColor(Color.parseColor(mShadowViewColor));//打开文件夹时候背后列表的透明颜色
         mImageFolderRv = new RecyclerView(context);
-        mImageFolderRv.setBackgroundColor(Color.parseColor("#ffffff"));//白色
+        //mImageFolderRv.setBackgroundColor(Color.parseColor("#ffffff"));//白色
+        mImageFolderRv.setBackground(ContextCompat.getDrawable(context, R.drawable.bottom_sheet_shape_style));
         FrameLayout.LayoutParams rvParams = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         rvParams.gravity = Gravity.BOTTOM;
         mImageFolderRv.setLayoutParams(rvParams);
+        mImageFolderRv.setPadding(0, SizeUtils.dp2px(20), 0, 0);
         //设置布局管理器setLayoutManager
         mImageFolderRv.setLayoutManager(new LinearLayoutManager(context));
         addView(mShadowView);
