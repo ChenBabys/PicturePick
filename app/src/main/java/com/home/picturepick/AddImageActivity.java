@@ -20,6 +20,7 @@ import com.home.picturepick.adapter.MainAdapter;
 import com.home.picturepick.fragment.PreViewDialogFragment;
 import com.home.picturepick.selectImage.Image;
 import com.home.picturepick.selectImage.ImageSelectActivity;
+import com.home.picturepick.task.ProccessAsyncTack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,7 @@ import static com.home.picturepick.selectImage.ImageSelectActivity.EXTRA_RESULT;
  * author : CYS
  * e-mail : 1584935420@qq.com
  * date : 2020/9/18 16:42
- * desc :
+ * desc :  使用ItemTouchHelper可以实现列表的左右滑动删除和位置移动。
  * version : 1.0
  */
 public class AddImageActivity extends AppCompatActivity {
@@ -94,6 +95,11 @@ public class AddImageActivity extends AppCompatActivity {
         } else {
             adapter.updateAll(photos);
         }
+
+
+        title.setOnClickListener(v -> {
+            new ProccessAsyncTack(AddImageActivity.this).execute();
+        });
 
     }
 

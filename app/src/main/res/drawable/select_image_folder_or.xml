@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/ic_down" android:state_activated="true" />
-    <item android:drawable="@drawable/ic_up" />
-
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:enterFadeDuration="100"
+    android:exitFadeDuration="100">
+    <item android:drawable="@drawable/ic_up" android:state_activated="true" />
+    <item android:drawable="@drawable/ic_down" />
 </selector>

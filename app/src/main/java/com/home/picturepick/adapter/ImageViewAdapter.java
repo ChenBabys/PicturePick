@@ -18,12 +18,12 @@ import androidx.viewpager.widget.PagerAdapter;
  * desc :
  * version : 1.0
  */
-public class ViewPagerAdapter extends PagerAdapter {
+public class ImageViewAdapter extends PagerAdapter {
     private List<ImageView> imageList;
-    private List<?> imageResource;
+    private List<String> imageResource;
 
 
-    public ViewPagerAdapter(List<ImageView> imageList, List<?> imageResource) {
+    public ImageViewAdapter(List<ImageView> imageList, List<String> imageResource) {
         this.imageList = imageList;
         this.imageResource = imageResource;
     }

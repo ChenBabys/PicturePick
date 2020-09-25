@@ -1,12 +1,5 @@
 package com.home.picturepick.fragment;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.viewpager.widget.ViewPager;
-
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,8 +12,17 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
+
 import com.home.picturepick.R;
 import com.home.picturepick.adapter.ImageViewAdapter;
+import com.home.picturepick.adapter.MuchImagePagerAdapter;
+import com.home.picturepick.selectImage.Image;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,28 +31,22 @@ import java.util.List;
  * author : CYS
  * e-mail : 1584935420@qq.com
  * date : 2020/9/18 16:42
- * desc :图片预览弹框，暂时没有打开后的双击图片放大和两手指撑开放大的功能，后续做吧
+ * desc :数量大的图片预览器
  * version : 1.0
  */
-public class PreViewDialogFragment extends DialogFragment {
+public class MuchsPreViewDialogFragment extends DialogFragment {
     private TextView changeCount;
     private ViewPager viewPager;
-    private List<ImageView> imageList;
-    private List<String> imagePathList;
-    //private List<Image> images;
+    private List<Image> imagePathList;
     private Context context;
-    private ImageViewAdapter adapter;
+    private MuchImagePagerAdapter adapter;
     private int mPosition;//当前位置下标
     private String formatIndicatorStyle = "%d\u0020/\u0020%d";
 
 
-    public void setImagePathList(List<String> imagePathList) {
+    public void setImagePathList(List<Image> imagePathList) {
         this.imagePathList = imagePathList;
     }
-
-//    public void setImageList(List<Image> images) {
-//        this.images = images;
-//    }
 
 
     public void setPosition(int position) {
@@ -86,15 +82,9 @@ public class PreViewDialogFragment extends DialogFragment {
 
     private void initData() {
         if (imagePathList != null && !imagePathList.isEmpty()) {
-            imageList = new ArrayList<>();
-            for (int i = 0; i < imagePathList.size(); i++) {
-                ImageView View = new ImageView(context);
-                imageList.add(View);
-                View.setOnClickListener(view -> dismiss());
-            }
-            adapter = new ImageViewAdapter(imageList, imagePathList);
+            adapter = new MuchImagePagerAdapter(imagePathList);
             viewPager.setAdapter(adapter);
-            viewPager.setOffscreenPageLimit(imageList.size() - 1);
+            viewPager.setOffscreenPageLimit(imagePathList.size() - 1);
             viewPager.setCurrentItem(mPosition);
             viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                 @Override
@@ -107,9 +97,27 @@ public class PreViewDialogFragment extends DialogFragment {
                     changeCount.setText(String.format(formatIndicatorStyle, position + 1, imagePathList.size()));
                 }
 
+                boolean isScrolled = false;
+
                 @Override
                 public void onPageScrollStateChanged(int state) {
-
+                    switch (state) {
+                        case 1:// 手势滑动
+                            isScrolled = false;
+                            break;
+                        case 2:// 界面切换
+                            // 当前为最后一张，此时从右向左滑，则切换到第一张
+                            if (viewPager.getCurrentItem() == adapter.getCount() - 1 && !isScrolled) {
+                                viewPager.setCurrentItem(0);
+                            }
+                            // 当前为第一张，此时从左向右滑，则切换到最后一张
+                            else if (viewPager.getCurrentItem() == 0 && !isScrolled) {
+                                viewPager.setCurrentItem(viewPager.getAdapter().getCount() - 1);
+                            }
+                            break;
+                        case 0:
+                            break;
+                    }
                 }
             });
             changeCount.setText(String.format(formatIndicatorStyle, mPosition + 1, imagePathList.size()));

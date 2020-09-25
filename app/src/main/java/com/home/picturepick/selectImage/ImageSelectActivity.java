@@ -74,7 +74,6 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
     private ImageFolderAdapter mImageFolderAdapter;
     private Handler savePicHandler, readImageListHandler;
     private Runnable savePicRunnable, readImageListRunnable;
-    private PreViewDialogFragment prefragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +81,6 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
         setContentView(R.layout.activity_image_select);
         initView();
         initImages();
-        initPreImageData();//预先加载预览图片的数据
     }
 
     private void initView() {
@@ -112,35 +110,6 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
         //异步加载图片
         LoaderManager.getInstance(this).initLoader(0, null, mLoaderCallbacks);
     }
-
-    /**
-     * 预先加载预览的全部照片
-     */
-    private void initPreImageData() {
-        readImageListHandler = new Handler();
-        ArrayList<String> preImageList = new ArrayList<>();
-        prefragment = new PreViewDialogFragment();
-        readImageListRunnable = new Runnable() {
-            @Override
-            public void run() {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mImages != null && !mImages.isEmpty()) {
-                            for (Image image : mImages) {
-                                preImageList.add(image.getPath());
-                            }
-                            //读取完了
-                            prefragment.setImagePathList(preImageList);
-                            LogUtils.d("读取完了");
-                        }
-                    }
-                });
-            }
-        };
-
-    }
-
 
     /**
      * //默认先加载的选中图片
@@ -210,14 +179,11 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
             imagesAdapter.setOnItemClickListener(new ImagesSelectAdapter.OnItemClickListener() {
                 @Override
                 public void onClick(View view, List<Image> photoList, int position) {
-                    //ToastUtils.showShort(position);
                     //如果是第一个就打开相机
                     if (position == 0)
                         onCameraClick();
-                    //预览图片
+                    //预览图片,数据量超过6000会很卡，暂时不管先了吧
                     setAllPreView(photoList, position);
-
-
 //                        //奇怪。父布局也可以让子布局的drawable选中的么
 //                        view.setSelected(true);
                 }
@@ -284,8 +250,20 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
      * 在相册里打开预览文件太多了是个耗时操作。用异步吧
      */
     private void setAllPreView(List<Image> photoList, int position) {
-        prefragment.setPosition(position);
-        prefragment.show(getSupportFragmentManager(), "");
+//        readImageListHandler = new Handler();
+//        readImageListRunnable = new Runnable() {
+//            @Override
+//            public void run() {
+//                if (photoList != null && !photoList.isEmpty()) {
+//                    MuchsPreViewDialogFragment prefragment = new MuchsPreViewDialogFragment();
+//                    prefragment.setImagePathList(photoList);
+//                    prefragment.setPosition(position);
+//                    prefragment.showNow(getSupportFragmentManager(), "MuchsPreViewDialogFragment");
+//                    // ToastUtils.showShort(Thread.currentThread().getName());
+//                }
+//            }
+//        };
+//        readImageListHandler.post(readImageListRunnable);
     }
 
     /**
@@ -396,8 +374,6 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
                         }
                     } while (data.moveToNext());
                 }
-                //预先加载预览的全部图片
-                readImageListHandler.post(readImageListRunnable);
                 //添加到显示的列表适配器
                 addImagesToAdapter(imagesList);
                 //全部照片
@@ -548,12 +524,12 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
             savePicHandler = null;
             savePicRunnable = null;
         }
-
         if (readImageListHandler != null) {
             readImageListHandler.removeCallbacks(readImageListRunnable);
             readImageListHandler = null;
-            readImageListHandler = null;
+            readImageListRunnable = null;
         }
+
 
     }
 }

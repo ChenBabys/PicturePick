@@ -11,6 +11,7 @@ import androidx.loader.content.Loader;
 import com.blankj.utilcode.util.LogUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.tencent.mmkv.MMKV;
 
@@ -23,10 +24,12 @@ public class App extends Application {
         MMKV.initialize(this);
 
 
-        //可以不初始化
-//        Glide.init(getApplicationContext(),
-//                new GlideBuilder().setDefaultRequestOptions(new RequestOptions()
-//                        .placeholder(R.color.white)));
+        //可以不初始化的，但是最好初始化。设置一下配置
+        Glide.init(getApplicationContext(),
+                new GlideBuilder().setDefaultRequestOptions(new RequestOptions()
+                        .skipMemoryCache(true)// 不使用内存缓存
+                        .diskCacheStrategy(DiskCacheStrategy.NONE) // 不使用磁盘缓存
+                        .placeholder(R.color.white)));
 
         // testHandlerThread();
 
