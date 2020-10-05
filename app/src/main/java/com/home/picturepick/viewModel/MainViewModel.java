@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel;
  * author : CYS
  * e-mail : 1584935420@qq.com
  * date : 2020/9/20 23:56
- * desc : viewmodel结合livedata使用
+ * desc : viewmodel结合livedata使用 纯属玩的和功能无关，可删
  * version : 1.0
  */
 public class MainViewModel extends ViewModel {

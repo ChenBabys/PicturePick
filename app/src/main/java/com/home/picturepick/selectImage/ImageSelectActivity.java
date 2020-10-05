@@ -1,6 +1,7 @@
 package com.home.picturepick.selectImage;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -49,7 +50,8 @@ import java.util.Locale;
  * author : CYS
  * e-mail : 1584935420@qq.com
  * date : 2020/9/18 16:42
- * desc :
+ * desc : 这个功能需要适配android10的特殊读取外部文件权限。需要在清单文件的Application中加上requestLegacyExternalStorage的布尔值来适配
+ * 但是奇怪的是android11不用适配。应该是官方另寻他法了
  * version : 1.0
  */
 public class ImageSelectActivity extends AppCompatActivity implements View.OnClickListener, ImageFolderView.ImageFolderViewListener {
@@ -282,13 +284,14 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
      * loader居然在api28之后不再推荐使用了（没过时），叼了，推荐使用ViewModels和LiveData结合了
      */
     private final LoaderManager.LoaderCallbacks<Cursor> mLoaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
+        @SuppressLint("InlinedApi")
         private final String[] IMAGE_PROJECTION = {
-                MediaStore.Images.ImageColumns.DATA,
-                MediaStore.Images.ImageColumns.DISPLAY_NAME,
-                MediaStore.Images.ImageColumns.DATE_ADDED,
-                MediaStore.Images.ImageColumns._ID,
-                MediaStore.Images.ImageColumns.MINI_THUMB_MAGIC,
-                MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME};
+                MediaStore.Images.Media.DATA,
+                MediaStore.Images.Media.DISPLAY_NAME,
+                MediaStore.Images.Media.DATE_ADDED,
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.MINI_THUMB_MAGIC,
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
 
 
         //创建一个CursorLoader，去异步加载相册的图片
@@ -370,7 +373,7 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
                                 imageFolder.getImages().add(image);
                             }
                         } else {
-                            ToastUtils.showShort("父文件夹空空如也");
+                            LogUtils.d("父文件夹空空如也");
                         }
                     } while (data.moveToNext());
                 }

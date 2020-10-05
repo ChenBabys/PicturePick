@@ -9,7 +9,7 @@ android:fitsSystemWindows="true",表示该控件会出现在系统状态栏里�
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".CollpsingActivity">
+    tools:context=".CollapsingActivity">
 
 
     <androidx.core.widget.NestedScrollView

@@ -1,9 +1,14 @@
 package com.home.picturepick;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Application;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.loader.content.Loader;
@@ -27,7 +32,7 @@ public class App extends Application {
         //可以不初始化的，但是最好初始化。设置一下配置
         Glide.init(getApplicationContext(),
                 new GlideBuilder().setDefaultRequestOptions(new RequestOptions()
-                        .skipMemoryCache(true)// 不使用内存缓存
+                        //.skipMemoryCache(true)// 不使用内存缓存
                         .diskCacheStrategy(DiskCacheStrategy.NONE) // 不使用磁盘缓存
                         .placeholder(R.color.white)));
 
@@ -61,4 +66,8 @@ public class App extends Application {
 //总结：handler 配合runnable并不会新建一个线程，而只有Thread配合runnable才是新线程
 //
 //    }
+
+
+
+
 }

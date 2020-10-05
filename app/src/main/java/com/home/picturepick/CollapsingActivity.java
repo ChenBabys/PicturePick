@@ -3,15 +3,11 @@ package com.home.picturepick;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.annotation.SuppressLint;
-import android.app.Notification;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -20,7 +16,6 @@ import android.widget.TextView;
 
 import com.blankj.utilcode.util.BusUtils;
 import com.blankj.utilcode.util.LogUtils;
-import com.blankj.utilcode.util.ToastUtils;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.home.picturepick.broadcast.TimeChangeReceiver;
@@ -32,7 +27,7 @@ import com.home.picturepick.viewModel.MainViewModel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class CollpsingActivity extends AppCompatActivity {
+public class CollapsingActivity extends AppCompatActivity {
 
     private Toolbar toolbar;//使用了CollapsingToolbarLayout，那么标题就是他控制了，而不是你
     private CollapsingToolbarLayout collToobar;
@@ -80,7 +75,7 @@ public class CollpsingActivity extends AppCompatActivity {
 
 
         floatingActionButton.setOnClickListener(view -> {
-            startActivity(new Intent(CollpsingActivity.this, AddImageActivity.class));
+            startActivity(new Intent(CollapsingActivity.this, AddImageActivity.class));
             //以后像那些个评论界面等等的地步弹出的就用它吧，好用的一批。
 //            BottomSheetMyDialogFragment fragment = new BottomSheetMyDialogFragment();
 //            fragment.showNow(getSupportFragmentManager(), "");

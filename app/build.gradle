@@ -2,8 +2,10 @@ apply plugin: 'com.android.application'
 //使用布兰柯基工具库中的BusUtil替代EvenBus。
 apply plugin: "com.blankj.bus"
 
-
-
+//关于android10不能直接选择外部文件的情况
+//targetSDK = 29, 默认开启Scoped Storage, 但可通过在manifest里添加requestLegacyExternalStorage = true关闭;
+//这个功能是防止app只要有了读写外部权限就可以为所欲为。
+//targetSDK < 29, 默认不开启Scoped Storage, 但可通过在manifest里添加requestLegacyExternalStorage = false打开;
 android {
     compileSdkVersion 29
 

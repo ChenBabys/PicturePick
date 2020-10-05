@@ -10,7 +10,7 @@ import androidx.lifecycle.OnLifecycleEvent;
  * author : CYS
  * e-mail : 1584935420@qq.com
  * date : 2020/9/21 0:12
- * desc : 一个lifecycle的活动生命周期观察类,通过注解功能来感知活动的生命周期
+ * desc : 一个lifecycle的活动生命周期观察类,通过注解功能来感知活动的生命周期 纯属玩的和功能无关，可删
  * version : 1.0
  */
 public class OurLifecycleObserver implements LifecycleObserver {

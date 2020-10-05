@@ -18,7 +18,7 @@ import com.home.picturepick.R;
  * author : CYS
  * e-mail : 1584935420@qq.com
  * date : 2020/9/25 15:21
- * desc : 异步耗时任务。更新进度到状态栏
+ * desc : 异步耗时任务。更新进度到状态栏 点击标题后调用，做来玩的
  * version : 1.0
  */
 public class ProccessAsyncTack extends AsyncTask<Integer, Integer, String> {
