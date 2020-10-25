@@ -5,10 +5,11 @@
 
     <uses-feature android:name="android.hardware.camera" /> <!-- 相机权限 -->
     <uses-permission android:name="android.permission.CAMERA" /> <!-- 写入SD卡的权限：如果你希望保存相机拍照后的照片 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 读取SD卡的权限:打开相册选取图片所必须的权限 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
-
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <!--      android:requestLegacyExternalStorage="true"加上这句可以适配android10读取外部照片的问题
        这个问题是Android 10才出现的，Android10以下的都没有，这里主要说的不是动态申请访问文件的权限问题。-->
     <!--    因为我已经动态申请了权限，并且在获得权限后存储文件报的这个错误。-->
@@ -17,8 +18,10 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_config"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:usesCleartextTraffic="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="q">
@@ -36,7 +39,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.home.picturepick.fileprovider"
+            android:authorities="com.home.picturepick.FileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

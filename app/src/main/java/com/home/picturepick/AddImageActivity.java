@@ -22,6 +22,7 @@ import com.home.picturepick.selectImage.Image;
 import com.home.picturepick.selectImage.ImageSelectActivity;
 import com.home.picturepick.task.ProccessAsyncTack;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,7 +99,7 @@ public class AddImageActivity extends AppCompatActivity {
 
 
         title.setOnClickListener(v -> {
-            new ProccessAsyncTack(AddImageActivity.this).execute();
+             new ProccessAsyncTack(AddImageActivity.this).execute();
         });
 
     }

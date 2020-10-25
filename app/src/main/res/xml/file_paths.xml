@@ -15,9 +15,9 @@
         name="cache"
         path="." />
     <!--    //context.getCacheDir()-->
-    <external-path
-        name="images"
-        path="." />
+<!--    <external-path-->
+<!--        name="images"-->
+<!--        path="." />-->
     <!--    //Environment.getExternalStorageDirectory()-->
     <external-files-path
         name="external-files"
@@ -27,4 +27,9 @@
         name="external-cache"
         path="." />
     <!--    //getExternalCacheDirs()-->
+
+    <external-path
+        name="download"
+        path="" />
+
 </paths>

@@ -1,17 +1,25 @@
 package com.home.picturepick;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.telephony.TelephonyManager;
+import android.telephony.emergency.EmergencyNumber;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.BusUtils;
@@ -26,6 +34,8 @@ import com.home.picturepick.viewModel.MainViewModel;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public class CollapsingActivity extends AppCompatActivity {
 
@@ -59,9 +69,10 @@ public class CollapsingActivity extends AppCompatActivity {
         //handle刷新UI
         handler = new Handler();
         runnable = new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.Q)
             @Override
             public void run() {
-                LogUtils.d("执行了hanldler");
+                //LogUtils.d("执行了hanldler");
                 Date date = new Date();
                 //String time = new SimpleDateFormat("HH:mm:ss yyyy-MM-dd").format(new Date());
                 String time = new SimpleDateFormat("HH:mm").format(date.getTime());
@@ -122,7 +133,7 @@ public class CollapsingActivity extends AppCompatActivity {
     //更新时间
     @BusUtils.Bus(tag = Constant.BUS_POST_NOTIFY_TIME)
     public void onBusNotifyTime() {
-        LogUtils.d("执行了");
+        //LogUtils.d("执行了");
         handler.post(runnable);
     }
 

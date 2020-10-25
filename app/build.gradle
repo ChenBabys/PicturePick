@@ -60,4 +60,6 @@ dependencies {
     implementation 'androidx.emoji:emoji-bundled:1.1.0'
     //支持库
     implementation 'androidx.emoji:emoji-appcompat:1.1.0'
+    implementation 'com.lzy.net:okgo:3.0.4'
+    implementation 'com.google.code.gson:gson:2.8.5'
 }
