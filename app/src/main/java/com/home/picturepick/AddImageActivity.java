@@ -1,17 +1,22 @@
 package com.home.picturepick;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityOptions;
 import android.content.ClipData;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.transition.Explode;
 import android.view.View;
+import android.view.Window;
 import android.widget.TextView;
 
 import com.blankj.utilcode.constant.PermissionConstants;
@@ -46,11 +51,17 @@ public class AddImageActivity extends AppCompatActivity {
     public final int LOCAL_REQUEST_CODE = 1001;
     public final int COMS_REQUEST_CODE = 1002;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @SuppressLint("ResourceType")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//       使用transition动画，首先在setContentView()之前执行，用于告诉Window页面切换需要使用动画
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         setContentView(R.layout.activity_add_image);
+        //参考网址：https://blog.csdn.net/weixin_30539835/article/details/96011676?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-3.channel_param&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-3.channel_param
+        getWindow().setEnterTransition(new Explode().setDuration(500));
+        getWindow().setExitTransition(new Explode().setDuration(500));
         title = this.findViewById(R.id.tv_title);
         title.setText("选择相册图片");
         photoList = this.findViewById(R.id.photoList);
@@ -99,12 +110,12 @@ public class AddImageActivity extends AppCompatActivity {
 
 
         title.setOnClickListener(v -> {
-             new ProccessAsyncTack(AddImageActivity.this).execute();
+            new ProccessAsyncTack(AddImageActivity.this).execute();
         });
 
     }
 
-
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void choose() {
         PermissionUtils.permission(PermissionConstants.STORAGE)
                 .callback(new PermissionUtils.SimpleCallback() {
@@ -116,13 +127,7 @@ public class AddImageActivity extends AppCompatActivity {
 //                        //开启多选(上面要是用pick的话，vivo手机不行，小米可以)
 //                        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
 //                        startActivityForResult(intent, LOCAL_REQUEST_CODE);
-
-                        //自定义相册选择照片
-                        startActivityForResult(new Intent(AddImageActivity.this,
-                                        ImageSelectActivity.class)
-                                //这是为了同步选中的代码，但是其实真没必要，因为我再去选的时候真没必要在选中这几张图
-                                //.putParcelableArrayListExtra("selected_images", mSelectImages)
-                                , COMS_REQUEST_CODE);
+                        intentToSelect();
 
                     }
 
@@ -131,6 +136,20 @@ public class AddImageActivity extends AppCompatActivity {
 
                     }
                 }).request();
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void intentToSelect() {
+        //自定义相册选择照片
+        startActivityForResult(new Intent(AddImageActivity.this, ImageSelectActivity.class)
+                , COMS_REQUEST_CODE
+//                使用transition动画得加上这玩意
+//                详情参考网址：https://blog.csdn.net/u012230055/article/details/80613295
+                , ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
+                //这是为了同步选中的代码，但是其实真没必要，因为我再去选的时候真没必要在选中这几张图
+                //.putParcelableArrayListExtra("selected_images", mSelectImages)
+        );
 
     }
 

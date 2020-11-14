@@ -12,12 +12,15 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.transition.Explode;
 import android.view.View;
+import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
@@ -77,10 +80,16 @@ public class ImageSelectActivity extends AppCompatActivity implements View.OnCli
     private Handler savePicHandler, readImageListHandler;
     private Runnable savePicRunnable, readImageListRunnable;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //使用transition动画，首先在setContentView()之前执行，用于告诉Window页面切换需要使用动画
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         setContentView(R.layout.activity_image_select);
+        //参考网址：https://blog.csdn.net/weixin_30539835/article/details/96011676?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-3.channel_param&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-3.channel_param
+        getWindow().setEnterTransition(new Explode().setDuration(500));
+        getWindow().setExitTransition(new Explode().setDuration(500));
         initView();
         initImages();
     }

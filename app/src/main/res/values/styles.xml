@@ -5,13 +5,26 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+<!--        表示激活Activity中元素的过渡效果-->
+        <item name="android:windowContentTransitions" tools:ignore="NewApi">true</item>
         <item name="windowNoTitle">true</item>
     </style>
 
     <!--新建一个活动切换的动画替代系统的原始动画。在清单文件中替换成他-->
-    <style name="animAppTheme" parent="AppTheme">
-        <item name="android:windowAnimationStyle">@style/animActivity</item>
-    </style>
+<!--    <style name="animAppTheme" parent="AppTheme">-->
+<!--        <item name="android:windowAnimationStyle">@style/animActivity</item>-->
+<!--    </style>  -->
+<!--    -->
+
+
+
+<!--    这种动画可以参考网址：https://blog.csdn.net/u012230055/article/details/80613295-->
+<!--    //换了一种transition动画-->
+<!--    <style name="animAppTheme" parent="AppTheme">-->
+<!--        <item name="android:windowExitTransition" tools:targetApi="lollipop">@transition/slide</item>-->
+<!--        <item name="android:windowEnterAnimation">@transition/slide</item>  -->
+<!--        <item name="android:windowReenterTransition" tools:targetApi="lollipop">@transition/slide</item>-->
+<!--    </style>-->
 
 
     <style name="animActivity" parent="android:style/Animation.Activity">

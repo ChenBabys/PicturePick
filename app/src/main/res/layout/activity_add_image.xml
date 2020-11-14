@@ -21,11 +21,19 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SpUsage" />
 
+
+    <!--    .将两个Activity中需要过渡的View加上android:transitionName属性,
+    都添加android:transitionName属性，并且取名一致。
+    然后ActivityOptions的makeSceneTransitionAnimation函数第一个参数Activity没啥解释的，第二个参数就是第一个Activity中的View对象，
+    第三个参数就是两个Activity的View的 android:transitionName属性的值。
+
+    -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/photoList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
+        android:transitionName="sharedView"
         app:layout_constraintTop_toBottomOf="@id/tv_title"
         tools:ignore="MissingConstraints" />
 

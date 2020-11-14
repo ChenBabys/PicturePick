@@ -23,7 +23,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:usesCleartextTraffic="true"
         android:supportsRtl="true"
-        android:theme="@style/animAppTheme"
+        android:theme="@style/AppTheme"
         tools:targetApi="q">
         <activity
             android:name=".CollapsingActivity"

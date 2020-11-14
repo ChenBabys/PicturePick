@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +22,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.telephony.TelephonyManager;
 import android.telephony.emergency.EmergencyNumber;
+import android.transition.Explode;
+import android.view.Window;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.BusUtils;
@@ -50,11 +53,16 @@ public class CollapsingActivity extends AppCompatActivity {
     private MainViewModel model;
 
 
-    @SuppressLint("SimpleDateFormat")
+    @SuppressLint({"SimpleDateFormat", "NewApi"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //使用transition动画，首先在setContentView()之前执行，用于告诉Window页面切换需要使用动画
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         setContentView(R.layout.activity_collpsing);
+//        使用transition动画，的代码接收方式
+        getWindow().setEnterTransition(new Explode().setDuration(500));
+        getWindow().setExitTransition(new Explode().setDuration(500));
         toolbar = this.findViewById(R.id.titleBar);
         collToobar = this.findViewById(R.id.collTitle);
         textView = this.findViewById(R.id.mian_text);
@@ -86,8 +94,14 @@ public class CollapsingActivity extends AppCompatActivity {
         handler.post(runnable);
 
 
+//        ActivityOptions的makeSceneTransitionAnimation函数第一个参数Activity没啥解释的，
+//        第二个参数就是第一个Activity中的View对象，第三个参数就是两个Activity的View的 android:transitionName属性的值。
         floatingActionButton.setOnClickListener(view -> {
-            startActivity(new Intent(CollapsingActivity.this, AddImageActivity.class));
+            startActivity(new Intent(CollapsingActivity.this, AddImageActivity.class)
+                    , ActivityOptions.makeSceneTransitionAnimation(this, textView,
+                            "sharedView")
+                            .toBundle()
+            );
             //以后像那些个评论界面等等的地步弹出的就用它吧，好用的一批。
 //            BottomSheetMyDialogFragment fragment = new BottomSheetMyDialogFragment();
 //            fragment.showNow(getSupportFragmentManager(), "");

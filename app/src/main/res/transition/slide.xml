@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<slide xmlns:android="http://schemas.android.com/apk/res/android"
+
+    xmlns:tools="http://schemas.android.com/tools"
+    android:interpolator="@android:interpolator/decelerate_cubic"
+    android:slideEdge="end"
+    tools:ignore="UnusedAttribute">
+<!--    如果你不希望顶部的状态栏以及底部的导航栏一起执行动画,就加这两句-->
+    <targets>
+        <target android:excludeId="@android:id/navigationBarBackground" />
+        <target android:excludeId="@android:id/statusBarBackground" />
+    </targets>
+
+</slide>
